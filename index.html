@@ -3,138 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Behavior Tracker - Ứng Dụng Theo Dõi Hành Vi Trẻ Em</title>
+    <title>Behavior Tracker</title>
     <style>
-        /* ===== RESET & BASE ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --bg-light: #f8fafc;
-            --bg-lighter: #e0f2fe;
-            --text-dark: #1e293b;
-            --text-light: #64748b;
-            --border-light: #e2e8f0;
-            --white: #ffffff;
-        }
-
-        html {
-            scroll-behavior: smooth;
-            background: var(--bg-light);
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-            color: var(--text-dark);
-            background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-lighter) 100%);
-            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+            color: #1e293b;
             line-height: 1.6;
+            min-height: 100vh;
         }
 
         body.dark-mode {
-            --bg-light: #1e293b;
-            --bg-lighter: #0f172a;
-            --text-dark: #f1f5f9;
-            --text-light: #cbd5e1;
-            --border-light: #334155;
-            --white: #0f172a;
-            background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-lighter) 100%);
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #f1f5f9;
         }
 
-        /* ===== NAVBAR ===== */
         .navbar {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: var(--white);
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
             padding: 1rem 2rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
         }
 
-        .navbar-title {
+        .navbar h1 {
             font-size: 1.5rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
 
         .navbar-controls {
             display: flex;
-            gap: 0.5rem;
-            align-items: center;
+            gap: 1rem;
         }
 
-        /* ===== BUTTONS ===== */
-        button, input[type="button"], input[type="submit"] {
-            cursor: pointer;
+        .btn-icon {
+            background: rgba(255,255,255,0.2);
             border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-            transition: all 0.2s ease;
-            font-weight: 500;
-        }
-
-        button.btn-primary, input[type="submit"] {
-            background: var(--primary);
-            color: var(--white);
-        }
-
-        button.btn-primary:hover {
-            background: var(--primary-dark);
-        }
-
-        button.btn-secondary {
-            background: var(--border-light);
-            color: var(--text-dark);
-        }
-
-        button.btn-secondary:hover {
-            opacity: 0.8;
-        }
-
-        button.btn-danger {
-            background: var(--danger);
-            color: var(--white);
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
-        }
-
-        button.btn-danger:hover {
-            opacity: 0.9;
-        }
-
-        button.btn-icon {
-            background: none;
-            border: none;
+            color: white;
             padding: 0.5rem;
-            font-size: 1.25rem;
             cursor: pointer;
-            color: var(--white);
+            border-radius: 4px;
+            font-size: 1.2rem;
         }
 
-        button.btn-icon:hover {
-            opacity: 0.8;
+        .btn-icon:hover {
+            background: rgba(255,255,255,0.3);
         }
 
-        /* ===== TABS ===== */
         .tabs {
             display: flex;
-            gap: 0;
-            border-bottom: 2px solid var(--border-light);
-            background: var(--white);
+            background: white;
+            border-bottom: 2px solid #e2e8f0;
             padding: 0 2rem;
             position: sticky;
             top: 0;
@@ -144,6 +70,7 @@
 
         body.dark-mode .tabs {
             background: #1e293b;
+            border-color: #334155;
         }
 
         .tab-btn {
@@ -151,25 +78,30 @@
             border: none;
             padding: 1rem 1.5rem;
             cursor: pointer;
-            font-size: 0.9rem;
-            color: var(--text-light);
+            color: #64748b;
             border-bottom: 3px solid transparent;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            font-weight: 500;
         }
 
         .tab-btn:hover {
-            color: var(--primary);
+            color: #2563eb;
         }
 
         .tab-btn.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
+            color: #2563eb;
+            border-bottom-color: #2563eb;
         }
 
-        /* ===== TAB CONTENT ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
         .tab-content {
             display: none;
-            padding: 2rem;
             animation: fadeIn 0.3s ease;
         }
 
@@ -178,47 +110,42 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ===== CARDS ===== */
         .card {
-            background: var(--white);
-            border-radius: 0.5rem;
-            border-left: 4px solid var(--primary);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            background: white;
+            border-left: 4px solid #2563eb;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             margin-bottom: 1.5rem;
             overflow: hidden;
-            transition: all 0.2s ease;
         }
 
         body.dark-mode .card {
             background: #1e293b;
-            border-color: var(--primary);
-        }
-
-        .card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: #2563eb;
         }
 
         .card-header {
-            background: var(--primary);
-            color: var(--white);
+            background: #2563eb;
+            color: white;
             padding: 1rem;
             font-weight: 600;
-            font-size: 1rem;
         }
 
         .card-body {
             padding: 1.5rem;
         }
 
-        .card.success { border-left-color: var(--success); }
-        .card.warning { border-left-color: var(--warning); }
-        .card.danger { border-left-color: var(--danger); }
+        .row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
 
-        /* ===== FORM ELEMENTS ===== */
         .form-group {
             margin-bottom: 1rem;
         }
@@ -228,7 +155,6 @@
             margin-bottom: 0.5rem;
             font-weight: 500;
             font-size: 0.9rem;
-            color: var(--text-dark);
         }
 
         input[type="text"],
@@ -238,21 +164,19 @@
         select,
         textarea {
             width: 100%;
-            padding: 0.5rem;
-            border: 1px solid var(--border-light);
-            border-radius: 0.375rem;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
             font-size: 0.9rem;
             font-family: inherit;
-            color: var(--text-dark);
-            background: var(--white);
-            transition: border 0.2s ease;
+            transition: border 0.2s;
         }
 
         body.dark-mode input,
         body.dark-mode select,
         body.dark-mode textarea {
             background: #0f172a;
-            color: var(--text-dark);
+            color: #f1f5f9;
             border-color: #334155;
         }
 
@@ -260,37 +184,39 @@
         select:focus,
         textarea:focus {
             outline: none;
-            border-color: var(--primary);
+            border-color: #2563eb;
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
-        input[readonly] {
-            background: var(--bg-light);
-            cursor: not-allowed;
-            opacity: 0.7;
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-size: 0.9rem;
         }
 
-        body.dark-mode input[readonly] {
-            background: #334155;
+        button:hover {
+            background: #1d4ed8;
         }
 
-        /* ===== GRID ===== */
-        .row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
+        button.secondary {
+            background: #e2e8f0;
+            color: #1e293b;
         }
 
-        .col-2 { grid-template-columns: repeat(2, 1fr); }
-        .col-3 { grid-template-columns: repeat(3, 1fr); }
-
-        @media (max-width: 768px) {
-            .row { grid-template-columns: 1fr; }
-            .col-2, .col-3 { grid-template-columns: 1fr; }
+        button.secondary:hover {
+            background: #cbd5e1;
         }
 
-        /* ===== TABLE ===== */
+        .w-100 {
+            width: 100%;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -298,16 +224,12 @@
             font-size: 0.875rem;
         }
 
-        body.dark-mode table {
-            color: var(--text-dark);
-        }
-
         th {
-            background: var(--bg-light);
+            background: #f1f5f9;
             padding: 0.75rem;
             text-align: left;
             font-weight: 600;
-            border-bottom: 2px solid var(--border-light);
+            border-bottom: 2px solid #e2e8f0;
         }
 
         body.dark-mode th {
@@ -316,21 +238,26 @@
 
         td {
             padding: 0.75rem;
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid #e2e8f0;
         }
 
         tr:hover {
             background: rgba(37, 99, 235, 0.05);
         }
 
-        body.dark-mode tr:hover {
-            background: rgba(37, 99, 235, 0.1);
+        .badge {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
 
-        /* ===== ALERT ===== */
         .alert {
             padding: 1rem;
-            border-radius: 0.375rem;
+            border-radius: 4px;
             margin-bottom: 1rem;
             border-left: 4px solid;
         }
@@ -338,15 +265,35 @@
         .alert.info {
             background: #eff6ff;
             color: #0c4a6e;
-            border-color: var(--primary);
+            border-color: #2563eb;
         }
 
-        body.dark-mode .alert.info {
-            background: rgba(37, 99, 235, 0.1);
-            color: #93c5fd;
+        .toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 9999;
         }
 
-        /* ===== STATISTICS ===== */
+        .toast {
+            background: #10b981;
+            color: white;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.error {
+            background: #ef4444;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(400px); }
+            to { transform: translateX(0); }
+        }
+
         .stat-box {
             text-align: center;
             padding: 1rem;
@@ -355,152 +302,48 @@
         .stat-value {
             font-size: 2rem;
             font-weight: 700;
-            color: var(--primary);
+            color: #2563eb;
         }
 
         .stat-label {
             font-size: 0.75rem;
-            color: var(--text-light);
+            color: #64748b;
             text-transform: uppercase;
             margin-top: 0.5rem;
         }
 
-        /* ===== TOAST NOTIFICATION ===== */
-        .toast-container {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .tabs { padding: 0 1rem; }
+            .navbar { padding: 1rem; }
+            .row { grid-template-columns: 1fr; }
         }
-
-        .toast {
-            background: var(--success);
-            color: var(--white);
-            padding: 1rem;
-            border-radius: 0.375rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            min-width: 300px;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(400px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        .toast.error { background: var(--danger); }
-        .toast.warning { background: var(--warning); }
-        .toast.info { background: var(--primary); }
-
-        /* ===== MODAL ===== */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--white);
-            border-radius: 0.5rem;
-            max-width: 600px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-
-        body.dark-mode .modal-content {
-            background: #1e293b;
-        }
-
-        .modal-header {
-            background: var(--primary);
-            color: var(--white);
-            padding: 1.5rem;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-body {
-            padding: 1.5rem;
-        }
-
-        .modal-footer {
-            padding: 1rem;
-            border-top: 1px solid var(--border-light);
-            display: flex;
-            gap: 0.5rem;
-            justify-content: flex-end;
-        }
-
-        /* ===== UTILITY ===== */
-        .text-center { text-align: center; }
-        .text-muted { color: var(--text-light); }
-        .mt-1 { margin-top: 0.5rem; }
-        .mt-2 { margin-top: 1rem; }
-        .mb-1 { margin-bottom: 0.5rem; }
-        .mb-2 { margin-bottom: 1rem; }
-        .w-100 { width: 100%; }
-        .gap-1 { gap: 0.5rem; }
-        .gap-2 { gap: 1rem; }
-        .flex { display: flex; }
-        .flex-between { display: flex; justify-content: space-between; }
-        .flex-center { display: flex; align-items: center; gap: 0.5rem; }
-        .badge {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        .badge-primary { background: var(--primary); color: var(--white); }
-        .badge-success { background: var(--success); color: var(--white); }
-        .badge-warning { background: var(--warning); color: var(--text-dark); }
     </style>
 </head>
 <body>
     <!-- NAVBAR -->
     <div class="navbar">
-        <div class="navbar-title">
-            ❤️ Behavior Tracker
-        </div>
+        <h1>❤️ Behavior Tracker</h1>
         <div class="navbar-controls">
-            <button class="btn-icon" id="darkModeToggle" title="Dark Mode">🌙</button>
-            <button class="btn-icon" id="settingsBtn" title="Settings">⚙️</button>
+            <button class="btn-icon" onclick="toggleDarkMode()" title="Dark Mode">🌙</button>
+            <button class="btn-icon" onclick="alert('Settings')" title="Settings">⚙️</button>
         </div>
     </div>
 
     <!-- TABS -->
     <div class="tabs">
-        <button class="tab-btn active" data-tab="profile">👤 Hồ Sơ</button>
-        <button class="tab-btn" data-tab="meal">🍽️ Nhập Liệu</button>
-        <button class="tab-btn" data-tab="history">📋 Lịch Sử</button>
-        <button class="tab-btn" data-tab="dashboard">📊 Dashboard</button>
-        <button class="tab-btn" data-tab="settings">⚙️ Cài Đặt</button>
+        <button class="tab-btn active" onclick="switchTab('profile')">👤 Hồ Sơ</button>
+        <button class="tab-btn" onclick="switchTab('meal')">🍽️ Nhập Liệu</button>
+        <button class="tab-btn" onclick="switchTab('history')">📋 Lịch Sử</button>
+        <button class="tab-btn" onclick="switchTab('dashboard')">📊 Dashboard</button>
+        <button class="tab-btn" onclick="switchTab('settings')">⚙️ Cài Đặt</button>
     </div>
 
-    <!-- TAB CONTENTS -->
-    <div class="container" style="max-width: 1200px; margin: 0 auto;">
-        
+    <!-- CONTAINER -->
+    <div class="container">
         <!-- PROFILE TAB -->
         <div class="tab-content active" id="profile">
-            <div class="row col-2">
+            <div class="row">
                 <div>
                     <div class="card">
                         <div class="card-header">👤 Thông Tin Trẻ</div>
@@ -520,28 +363,28 @@
                                 <label>Tuổi (tự động)</label>
                                 <input type="text" id="childAge" readonly>
                             </div>
-                            <div class="row col-2">
+                            <div class="row">
                                 <div class="form-group">
                                     <label>Chiều cao (cm)</label>
-                                    <input type="number" id="childHeight" step="0.1">
+                                    <input type="number" id="childHeight" step="0.1" value="0">
                                 </div>
                                 <div class="form-group">
                                     <label>Cân nặng (kg)</label>
-                                    <input type="number" id="childWeight" step="0.1">
+                                    <input type="number" id="childWeight" step="0.1" value="0">
                                 </div>
                             </div>
-                            <button class="btn-primary w-100" onclick="saveProfile()">💾 Lưu Hồ Sơ</button>
+                            <button class="w-100" onclick="saveProfile()">💾 Lưu Hồ Sơ</button>
                         </div>
                     </div>
                 </div>
                 <div>
-                    <div class="card success">
-                        <div class="card-header" style="background: var(--success);">💡 Hướng Dẫn</div>
+                    <div class="card">
+                        <div class="card-header" style="background: #10b981;">💡 Hướng Dẫn</div>
                         <div class="card-body">
                             <p><strong>Behavior Tracker</strong></p>
-                            <p class="text-muted" style="font-size: 0.875rem; margin-bottom: 1rem;">Ứng dụng theo dõi hành vi trẻ dựa trên Evidence-Based Parenting</p>
+                            <p style="color: #64748b; font-size: 0.875rem; margin-bottom: 1rem;">Ứng dụng theo dõi hành vi trẻ dựa trên Evidence-Based Parenting</p>
                             <p style="font-weight: 600; margin-bottom: 0.5rem;">📌 Tính Năng:</p>
-                            <ul style="font-size: 0.875rem; list-style: none; color: var(--text-light);">
+                            <ul style="font-size: 0.875rem; list-style: none; color: #64748b;">
                                 <li>✓ Quản lý hồ sơ trẻ</li>
                                 <li>✓ Ghi nhận chi tiết bữa ăn</li>
                                 <li>✓ Xem lịch sử đầy đủ</li>
@@ -556,122 +399,95 @@
 
         <!-- MEAL ENTRY TAB -->
         <div class="tab-content" id="meal">
-            <div class="row col-2">
-                <div>
-                    <div class="card">
-                        <div class="card-header">🍽️ Nhập Liệu Bữa Ăn</div>
-                        <div class="card-body">
-                            <div class="row col-2">
-                                <div class="form-group">
-                                    <label>Ngày</label>
-                                    <input type="date" id="mealDate">
-                                </div>
-                                <div class="form-group">
-                                    <label>Loại bữa</label>
-                                    <select id="mealType">
-                                        <option value="">Chọn</option>
-                                        <option value="breakfast">🌅 Sáng</option>
-                                        <option value="lunch">🌞 Trưa</option>
-                                        <option value="dinner">🌙 Tối</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="row col-2">
-                                <div class="form-group">
-                                    <label>Giờ bắt đầu</label>
-                                    <input type="time" id="startTime">
-                                </div>
-                                <div class="form-group">
-                                    <label>Giờ kết thúc</label>
-                                    <input type="time" id="endTime">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Tổng thời gian (phút)</label>
-                                <input type="text" id="totalTime" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label>% hoàn thành</label>
-                                <select id="mealCompletion">
-                                    <option value="">Chọn</option>
-                                    <option value="100">100%</option>
-                                    <option value="75">75%</option>
-                                    <option value="50">50%</option>
-                                    <option value="25">25%</option>
-                                </select>
-                            </div>
-                            <div class="row col-2">
-                                <div class="form-group">
-                                    <label>Lần nhắc ăn</label>
-                                    <input type="number" id="eatingReminders" min="0" value="0">
-                                </div>
-                                <div class="form-group">
-                                    <label>Lần khóc</label>
-                                    <input type="number" id="cryingCount" min="0" value="0">
-                                </div>
-                            </div>
-                            <div class="row col-2">
-                                <div class="form-group">
-                                    <label>Rời ghế</label>
-                                    <input type="number" id="leavingChairCount" min="0" value="0">
-                                </div>
-                                <div class="form-group">
-                                    <label>Ngậm thức ăn</label>
-                                    <input type="number" id="mouthHoldingCount" min="0" value="0">
-                                </div>
-                            </div>
-                            <div class="row col-2">
-                                <div class="form-group">
-                                    <label>Cảm xúc trẻ</label>
-                                    <select id="childEmotion">
-                                        <option value="">Chọn</option>
-                                        <option value="calm">😊 Bình tĩnh</option>
-                                        <option value="slightly_uncomfortable">😐 Hơi khó chịu</option>
-                                        <option value="light_crying">😢 Khóc nhẹ</option>
-                                        <option value="prolonged_crying">😭 Khóc kéo dài</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Căng thẳng người lớn</label>
-                                    <select id="caregiverStress">
-                                        <option value="">Chọn</option>
-                                        <option value="calm">😊 Bình tĩnh</option>
-                                        <option value="slightly_uncomfortable">😐 Khó chịu nhẹ</option>
-                                        <option value="frustrated">😠 Bực bội</option>
-                                        <option value="very_angry">😡 Rất tức</option>
-                                        <option value="losing_control">🤯 Sắp mất kiểm soát</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Ghi chú</label>
-                                <textarea id="mealNotes" rows="3" placeholder="Ghi nhận chi tiết..."></textarea>
-                            </div>
-                            <div class="row col-2">
-                                <button class="btn-primary w-100" onclick="saveMealEntry()">💾 Lưu</button>
-                                <button class="btn-secondary w-100" onclick="clearMealForm()">🔄 Xóa</button>
-                            </div>
+            <div class="card">
+                <div class="card-header">🍽️ Nhập Liệu Bữa Ăn</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Ngày</label>
+                            <input type="date" id="mealDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Loại bữa</label>
+                            <select id="mealType">
+                                <option value="">Chọn</option>
+                                <option value="breakfast">🌅 Sáng</option>
+                                <option value="lunch">🌞 Trưa</option>
+                                <option value="dinner">🌙 Tối</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Giờ bắt đầu</label>
+                            <input type="time" id="startTime">
+                        </div>
+                        <div class="form-group">
+                            <label>Giờ kết thúc</label>
+                            <input type="time" id="endTime">
+                        </div>
+                        <div class="form-group">
+                            <label>Tổng thời gian (phút)</label>
+                            <input type="text" id="totalTime" readonly value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>% hoàn thành</label>
+                            <select id="mealCompletion">
+                                <option value="">Chọn</option>
+                                <option value="100">100%</option>
+                                <option value="75">75%</option>
+                                <option value="50">50%</option>
+                                <option value="25">25%</option>
+                            </select>
                         </div>
                     </div>
-                </div>
-                <div>
-                    <div class="card warning">
-                        <div class="card-header" style="background: var(--warning);">💡 Hành Vi Quan Sát Được</div>
-                        <div class="card-body">
-                            <p style="font-weight: 600; margin-bottom: 0.5rem;">✅ Ghi Nhận:</p>
-                            <ul style="font-size: 0.875rem; list-style: none; color: var(--text-light); margin-bottom: 1rem;">
-                                <li>✓ Rời ghế 5 lần</li>
-                                <li>✓ Khóc kéo dài</li>
-                                <li>✓ Ngậm thức ăn</li>
-                                <li>✓ Từ chối ăn</li>
-                            </ul>
-                            <p style="font-weight: 600; margin-bottom: 0.5rem;">❌ Tránh Ghi Nhận:</p>
-                            <ul style="font-size: 0.875rem; list-style: none; color: var(--text-light);">
-                                <li>✗ Trẻ lười</li>
-                                <li>✗ Trẻ bướng</li>
-                                <li>✗ Trẻ không hợp tác</li>
-                            </ul>
+
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Lần nhắc ăn</label>
+                            <input type="number" id="eatingReminders" min="0" value="0">
                         </div>
+                        <div class="form-group">
+                            <label>Lần khóc</label>
+                            <input type="number" id="cryingCount" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Rời ghế</label>
+                            <input type="number" id="leavingChairCount" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Ngậm thức ăn</label>
+                            <input type="number" id="mouthHoldingCount" min="0" value="0">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Cảm xúc trẻ</label>
+                            <select id="childEmotion">
+                                <option value="">Chọn</option>
+                                <option value="calm">😊 Bình tĩnh</option>
+                                <option value="uncomfortable">😐 Hơi khó chịu</option>
+                                <option value="crying">😢 Khóc</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Căng thẳng người lớn</label>
+                            <select id="caregiverStress">
+                                <option value="">Chọn</option>
+                                <option value="calm">😊 Bình tĩnh</option>
+                                <option value="stressed">😠 Căng thẳng</option>
+                                <option value="angry">😡 Tức giận</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ghi chú</label>
+                        <textarea id="mealNotes" rows="3" placeholder="Ghi nhận chi tiết..."></textarea>
+                    </div>
+
+                    <div class="row">
+                        <button class="w-100" onclick="saveMealEntry()">💾 Lưu</button>
+                        <button class="w-100 secondary" onclick="clearMealForm()">🔄 Xóa</button>
                     </div>
                 </div>
             </div>
@@ -682,15 +498,15 @@
             <div class="card">
                 <div class="card-header">📋 Lịch Sử Bữa Ăn</div>
                 <div class="card-body">
-                    <div class="row col-3" style="margin-bottom: 1rem;">
-                        <input type="date" id="historyFilterDate" placeholder="Lọc ngày">
+                    <div class="row">
+                        <input type="date" id="historyFilterDate">
                         <select id="historyFilterMealType">
                             <option value="">Tất cả bữa</option>
                             <option value="breakfast">🌅 Sáng</option>
                             <option value="lunch">🌞 Trưa</option>
                             <option value="dinner">🌙 Tối</option>
                         </select>
-                        <button class="btn-primary w-100" onclick="applyHistoryFilters()">🔍 Tìm Kiếm</button>
+                        <button class="w-100" onclick="applyHistoryFilters()">🔍 Tìm Kiếm</button>
                     </div>
                     <div style="overflow-x: auto;">
                         <table>
@@ -702,13 +518,12 @@
                                     <th>% Hoàn</th>
                                     <th>Nhắc</th>
                                     <th>Khóc</th>
-                                    <th>Rời Ghế</th>
                                     <th>Thao Tác</th>
                                 </tr>
                             </thead>
                             <tbody id="historyTable">
                                 <tr>
-                                    <td colspan="8" class="text-center text-muted">Chưa có dữ liệu</td>
+                                    <td colspan="7" style="text-align: center; color: #64748b;">Chưa có dữ liệu</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -722,10 +537,10 @@
             <div class="card">
                 <div class="card-header">📊 Dashboard Thống Kê</div>
                 <div class="card-body">
-                    <div class="row col-3" style="margin-bottom: 2rem;">
-                        <button class="btn-secondary w-100" onclick="setDashboardRange(7)">7 Ngày</button>
-                        <button class="btn-secondary w-100" onclick="setDashboardRange(30)">30 Ngày</button>
-                        <button class="btn-secondary w-100" onclick="setDashboardRange(0)">Toàn Bộ</button>
+                    <div class="row">
+                        <button class="w-100 secondary" onclick="setDashboardRange(7)">7 Ngày</button>
+                        <button class="w-100 secondary" onclick="setDashboardRange(30)">30 Ngày</button>
+                        <button class="w-100 secondary" onclick="setDashboardRange(0)">Toàn Bộ</button>
                     </div>
                     <div id="dashboardStats"></div>
                 </div>
@@ -738,52 +553,425 @@
                 <div class="card-header">⚙️ Cài Đặt & Dữ Liệu</div>
                 <div class="card-body">
                     <h3 style="margin-bottom: 1rem;">📤 Xuất Dữ Liệu</h3>
-                    <div class="row col-2" style="margin-bottom: 2rem;">
-                        <button class="btn-primary w-100" onclick="exportJSON()">📥 Xuất JSON</button>
-                        <button class="btn-primary w-100" onclick="exportCSV()">📥 Xuất CSV</button>
+                    <div class="row">
+                        <button class="w-100" onclick="exportJSON()">📥 Xuất JSON</button>
+                        <button class="w-100" onclick="exportCSV()">📥 Xuất CSV</button>
                     </div>
-                    <h3 style="margin-bottom: 1rem;">📥 Nhập Dữ Liệu</h3>
-                    <div class="row col-2" style="margin-bottom: 2rem;">
-                        <button class="btn-primary w-100" onclick="importJSON()">📤 Nhập JSON</button>
-                    </div>
-                    <h3 style="margin-bottom: 1rem;">💾 Dữ Liệu</h3>
-                    <p style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 1rem;">
+                    <h3 style="margin-bottom: 1rem; margin-top: 2rem;">💾 Dữ Liệu</h3>
+                    <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 1rem;">
                         Dung lượng: <strong id="storageUsage">0</strong> KB
                     </p>
-                    <button class="btn-danger w-100" onclick="clearAllData()">🗑️ Xóa Toàn Bộ Dữ Liệu</button>
+                    <button class="w-100" style="background: #ef4444;" onclick="clearAllData()">🗑️ Xóa Toàn Bộ Dữ Liệu</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL IMPORT -->
-    <div class="modal" id="importModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                📤 Nhập JSON
-                <button class="btn-icon" onclick="closeImportModal()" style="background: rgba(255,255,255,0.2);">✕</button>
-            </div>
-            <div class="modal-body">
-                <input type="file" id="fileInput" accept=".json" style="display: block; margin-bottom: 1rem;">
-            </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" onclick="closeImportModal()">Hủy</button>
-                <button class="btn-primary" onclick="confirmImport()">Nhập</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- TOAST CONTAINER -->
+    <!-- TOAST -->
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        // ==================== STORAGE MANAGER ====================
-        const StorageManager = {
+        // ==================== STORAGE ====================
+        const Storage = {
             useMemory: false,
-            memoryStorage: {},
-            
-            isAvailable() {
+            memoryStore: {},
+
+            init() {
                 try {
-                    const test = '__test__';
-                    localStorage.setItem(test, test);
-                    localStorage.removeItem(test
+                    localStorage.setItem('test', 'test');
+                    localStorage.removeItem('test');
+                } catch (e) {
+                    console.warn('localStorage blocked, using memory');
+                    this.useMemory = true;
+                }
+            },
+
+            set(key, value) {
+                try {
+                    if (this.useMemory) {
+                        this.memoryStore[key] = value;
+                    } else {
+                        localStorage.setItem(key, value);
+                    }
+                } catch (e) {
+                    this.memoryStore[key] = value;
+                }
+            },
+
+            get(key) {
+                try {
+                    if (this.useMemory) return this.memoryStore[key];
+                    return localStorage.getItem(key);
+                } catch (e) {
+                    return this.memoryStore[key];
+                }
+            },
+
+            clear() {
+                this.memoryStore = {};
+                try { localStorage.clear(); } catch (e) {}
+            }
+        };
+
+        Storage.init();
+
+        // ==================== DATA ====================
+        let app = {
+            profile: { name: '', birthDate: '', height: 0, weight: 0 },
+            meals: []
+        };
+
+        function loadData() {
+            const data = Storage.get('app_data');
+            if (data) {
+                try {
+                    app = JSON.parse(data);
+                } catch (e) {
+                    console.error('Load error:', e);
+                }
+            }
+            loadProfileUI();
+        }
+
+        function saveData() {
+            Storage.set('app_data', JSON.stringify(app));
+        }
+
+        // ==================== PROFILE ====================
+        function loadProfileUI() {
+            document.getElementById('childName').value = app.profile.name;
+            document.getElementById('birthDate').value = app.profile.birthDate;
+            document.getElementById('childHeight').value = app.profile.height || 0;
+            document.getElementById('childWeight').value = app.profile.weight || 0;
+            updateAge();
+        }
+
+        function saveProfile() {
+            const name = document.getElementById('childName').value;
+            const birthDate = document.getElementById('birthDate').value;
+
+            if (!name || !birthDate) {
+                showToast('Vui lòng nhập đủ thông tin', 'error');
+                return;
+            }
+
+            app.profile = {
+                name,
+                birthDate,
+                height: parseFloat(document.getElementById('childHeight').value) || 0,
+                weight: parseFloat(document.getElementById('childWeight').value) || 0
+            };
+
+            saveData();
+            showToast('Hồ sơ đã lưu', 'success');
+        }
+
+        function updateAge() {
+            const birthDate = document.getElementById('birthDate').value;
+            if (!birthDate) {
+                document.getElementById('childAge').value = '';
+                return;
+            }
+            const today = new Date();
+            const birth = new Date(birthDate);
+            let age = today.getFullYear() - birth.getFullYear();
+            const m = today.getMonth() - birth.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+            document.getElementById('childAge').value = age + ' tuổi';
+        }
+
+        // ==================== MEAL ====================
+        function calculateMealTime() {
+            const st = document.getElementById('startTime').value;
+            const et = document.getElementById('endTime').value;
+            if (!st || !et) return;
+
+            const [sh, sm] = st.split(':').map(Number);
+            const [eh, em] = et.split(':').map(Number);
+            let time = (eh * 60 + em) - (sh * 60 + sm);
+            if (time < 0) time += 24 * 60;
+            document.getElementById('totalTime').value = time;
+        }
+
+        function saveMealEntry() {
+            const date = document.getElementById('mealDate').value;
+            const mealType = document.getElementById('mealType').value;
+            const st = document.getElementById('startTime').value;
+            const et = document.getElementById('endTime').value;
+
+            if (!date || !mealType || !st || !et) {
+                showToast('Vui lòng điền đủ thông tin', 'error');
+                return;
+            }
+
+            const meal = {
+                id: Date.now().toString(),
+                date,
+                mealType,
+                startTime: st,
+                endTime: et,
+                totalTime: parseInt(document.getElementById('totalTime').value) || 0,
+                mealCompletion: parseInt(document.getElementById('mealCompletion').value) || 0,
+                eatingReminders: parseInt(document.getElementById('eatingReminders').value) || 0,
+                cryingCount: parseInt(document.getElementById('cryingCount').value) || 0,
+                leavingChairCount: parseInt(document.getElementById('leavingChairCount').value) || 0,
+                mouthHoldingCount: parseInt(document.getElementById('mouthHoldingCount').value) || 0,
+                childEmotion: document.getElementById('childEmotion').value,
+                caregiverStress: document.getElementById('caregiverStress').value,
+                notes: document.getElementById('mealNotes').value
+            };
+
+            app.meals.push(meal);
+            saveData();
+            clearMealForm();
+            showToast('Bữa ăn đã lưu', 'success');
+            refreshHistory();
+            refreshDashboard();
+        }
+
+        function clearMealForm() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('mealDate').value = today;
+            document.getElementById('mealType').value = '';
+            document.getElementById('startTime').value = '';
+            document.getElementById('endTime').value = '';
+            document.getElementById('totalTime').value = '';
+            document.getElementById('mealCompletion').value = '';
+            document.getElementById('eatingReminders').value = '0';
+            document.getElementById('cryingCount').value = '0';
+            document.getElementById('leavingChairCount').value = '0';
+            document.getElementById('mouthHoldingCount').value = '0';
+            document.getElementById('childEmotion').value = '';
+            document.getElementById('caregiverStress').value = '';
+            document.getElementById('mealNotes').value = '';
+        }
+
+        // ==================== HISTORY ====================
+        function refreshHistory() {
+            const meals = app.meals.slice().reverse();
+            const tbody = document.getElementById('historyTable');
+
+            if (meals.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #64748b;">Chưa có dữ liệu</td></tr>';
+                return;
+            }
+
+            const types = { breakfast: '🌅 Sáng', lunch: '🌞 Trưa', dinner: '🌙 Tối' };
+            tbody.innerHTML = meals.map(m => `
+                <tr>
+                    <td>${m.date}</td>
+                    <td><span class="badge">${types[m.mealType]}</span></td>
+                    <td>${m.totalTime}m</td>
+                    <td>${m.mealCompletion}%</td>
+                    <td>${m.eatingReminders}</td>
+                    <td>${m.cryingCount}</td>
+                    <td><button style="background: #ef4444;" onclick="deleteMeal('${m.id}')">🗑️</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function applyHistoryFilters() {
+            const date = document.getElementById('historyFilterDate').value;
+            const type = document.getElementById('historyFilterMealType').value;
+
+            let meals = app.meals;
+            if (date) meals = meals.filter(m => m.date === date);
+            if (type) meals = meals.filter(m => m.mealType === type);
+
+            meals = meals.slice().reverse();
+            const tbody = document.getElementById('historyTable');
+
+            if (meals.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Không tìm thấy</td></tr>';
+                return;
+            }
+
+            const types = { breakfast: '🌅 Sáng', lunch: '🌞 Trưa', dinner: '🌙 Tối' };
+            tbody.innerHTML = meals.map(m => `
+                <tr>
+                    <td>${m.date}</td>
+                    <td><span class="badge">${types[m.mealType]}</span></td>
+                    <td>${m.totalTime}m</td>
+                    <td>${m.mealCompletion}%</td>
+                    <td>${m.eatingReminders}</td>
+                    <td>${m.cryingCount}</td>
+                    <td><button style="background: #ef4444;" onclick="deleteMeal('${m.id}')">🗑️</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteMeal(id) {
+            if (confirm('Xóa bữa ăn?')) {
+                app.meals = app.meals.filter(m => m.id !== id);
+                saveData();
+                refreshHistory();
+                refreshDashboard();
+                showToast('Đã xóa', 'success');
+            }
+        }
+
+        // ==================== DASHBOARD ====================
+        let dashRange = 30;
+
+        function setDashboardRange(days) {
+            dashRange = days;
+            refreshDashboard();
+        }
+
+        function refreshDashboard() {
+            let meals = app.meals;
+            if (dashRange > 0) {
+                const cutoff = new Date();
+                cutoff.setDate(cutoff.getDate() - dashRange);
+                meals = meals.filter(m => new Date(m.date) >= cutoff);
+            }
+
+            if (meals.length === 0) {
+                document.getElementById('dashboardStats').innerHTML = '<p style="color: #64748b;">Chưa có dữ liệu</p>';
+                return;
+            }
+
+            const avg = (arr) => (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(1);
+            const avgTime = avg(meals.map(m => m.totalTime));
+            const avgComp = avg(meals.map(m => m.mealCompletion));
+            const avgCry = avg(meals.map(m => m.cryingCount));
+            const avgRemind = avg(meals.map(m => m.eatingReminders));
+
+            const html = `
+                <div class="row">
+                    <div class="card">
+                        <div class="card-body stat-box">
+                            <div class="stat-value">${avgTime}</div>
+                            <div class="stat-label">⏱️ Phút/Bữa</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body stat-box">
+                            <div class="stat-value">${avgComp}%</div>
+                            <div class="stat-label">🍽️ Hoàn Thành</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body stat-box">
+                            <div class="stat-value">${avgRemind}</div>
+                            <div class="stat-label">🔔 Nhắc/Bữa</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body stat-box">
+                            <div class="stat-value">${avgCry}</div>
+                            <div class="stat-label">😢 Khóc/Bữa</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 style="margin-bottom: 1rem;">📈 Xu Hướng Thời Gian Ăn</h4>
+                        <div>${meals.slice(-7).map(m => `
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; gap: 1rem;">
+                                    <span style="width: 60px; font-size: 0.875rem;">${m.date}</span>
+                                    <div style="flex: 1; background: #e2e8f0; border-radius: 4px; height: 24px;">
+                                        <div style="width: ${(m.totalTime / 40 * 100)}%; background: #2563eb; height: 100%; border-radius: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 0.5rem; color: white; font-size: 0.75rem; font-weight: 600;">
+                                            ${m.totalTime}m
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}</div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('dashboardStats').innerHTML = html;
+        }
+
+        // ==================== EXPORT ====================
+        function exportJSON() {
+            const data = { profile: app.profile, meals: app.meals, exportDate: new Date().toISOString() };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `tracker-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Đã xuất JSON', 'success');
+        }
+
+        function exportCSV() {
+            if (app.meals.length === 0) {
+                showToast('Không có dữ liệu', 'error');
+                return;
+            }
+
+            let csv = 'Ngày,Bữa,Giờ Bắt Đầu,Thời Gian,Hoàn Thành,Nhắc,Khóc,Rời Ghế,Ghi Chú\n';
+            const types = { breakfast: 'Sáng', lunch: 'Trưa', dinner: 'Tối' };
+            app.meals.forEach(m => {
+                csv += `${m.date},${types[m.mealType] || m.mealType},${m.startTime},${m.totalTime},${m.mealCompletion},${m.eatingReminders},${m.cryingCount},${m.leavingChairCount},"${m.notes}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `tracker-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Đã xuất CSV', 'success');
+        }
+
+        // ==================== UI ====================
+        function switchTab(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+            document.getElementById(id).classList.add('active');
+            event.target.classList.add('active');
+
+            if (id === 'history') refreshHistory();
+            if (id === 'dashboard') refreshDashboard();
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            Storage.set('darkMode', isDark ? 'yes' : 'no');
+        }
+
+        function showToast(msg, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + (type === 'error' ? 'error' : '');
+            toast.textContent = msg;
+            document.getElementById('toastContainer').appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function clearAllData() {
+            if (confirm('Xóa tất cả dữ liệu?')) {
+                app = { profile: { name: '', birthDate: '', height: 0, weight: 0 }, meals: [] };
+                Storage.clear();
+                location.reload();
+            }
+        }
+
+        // ==================== INIT ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('App initialized');
+            loadData();
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('mealDate').value = today;
+
+            document.getElementById('startTime').addEventListener('change', calculateMealTime);
+            document.getElementById('endTime').addEventListener('change', calculateMealTime);
+            document.getElementById('birthDate').addEventListener('change', updateAge);
+
+            const darkMode = Storage.get('darkMode') === 'yes';
+            if (darkMode) document.body.classList.add('dark-mode');
+
+            refreshHistory();
+            refreshDashboard();
+        });
+    </script>
+</body>
+</html>
