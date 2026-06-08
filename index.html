@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Behavior Tracker</title>
+    <title>Behavior Tracker - Goal Tracking</title>
     <style>
         * {
             margin: 0;
@@ -148,13 +148,70 @@
 
         .form-group {
             margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .form-group-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
         }
 
         label {
             display: block;
-            margin-bottom: 0.5rem;
             font-weight: 500;
             font-size: 0.9rem;
+        }
+
+        .tooltip-icon {
+            font-size: 1.2rem;
+            cursor: help;
+            color: #2563eb;
+            position: relative;
+        }
+
+        .tooltip-box {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            background: #1e293b;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            width: 250px;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            line-height: 1.5;
+            pointer-events: none;
+        }
+
+        .tooltip-box.dark {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .tooltip-icon:hover .tooltip-box {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .tooltip-box::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 10px;
+            border: 6px solid transparent;
+            border-top-color: #1e293b;
+        }
+
+        .tooltip-box.dark::after {
+            border-top-color: #f1f5f9;
         }
 
         input[type="text"],
@@ -213,6 +270,14 @@
             background: #cbd5e1;
         }
 
+        button.danger {
+            background: #ef4444;
+        }
+
+        button.danger:hover {
+            background: #dc2626;
+        }
+
         .w-100 {
             width: 100%;
         }
@@ -253,6 +318,14 @@
             border-radius: 12px;
             font-size: 0.75rem;
             font-weight: 600;
+        }
+
+        .badge.gold {
+            background: #f59e0b;
+        }
+
+        .badge.silver {
+            background: #a0aec0;
         }
 
         .alert {
@@ -312,11 +385,93 @@
             margin-top: 0.5rem;
         }
 
+        .progress-bar {
+            width: 100%;
+            height: 24px;
+            background: #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2563eb, #1d4ed8);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .goal-item {
+            background: #f8fafc;
+            border-left: 4px solid #2563eb;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        body.dark-mode .goal-item {
+            background: #334155;
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .goal-info {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+        }
+
+        body.dark-mode .goal-info {
+            color: #cbd5e1;
+        }
+
+        .goal-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .goal-stat {
+            text-align: center;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 4px;
+        }
+
+        body.dark-mode .goal-stat {
+            background: #1e293b;
+        }
+
+        .goal-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .goal-stat-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 0.25rem;
+        }
+
         @media (max-width: 768px) {
             .container { padding: 1rem; }
             .tabs { padding: 0 1rem; }
             .navbar { padding: 1rem; }
             .row { grid-template-columns: 1fr; }
+            .tooltip-box { width: 200px; }
         }
     </style>
 </head>
@@ -326,7 +481,6 @@
         <h1>❤️ Behavior Tracker</h1>
         <div class="navbar-controls">
             <button class="btn-icon" onclick="toggleDarkMode()" title="Dark Mode">🌙</button>
-            <button class="btn-icon" onclick="alert('Settings')" title="Settings">⚙️</button>
         </div>
     </div>
 
@@ -335,6 +489,7 @@
         <button class="tab-btn active" onclick="switchTab('profile')">👤 Hồ Sơ</button>
         <button class="tab-btn" onclick="switchTab('meal')">🍽️ Nhập Liệu</button>
         <button class="tab-btn" onclick="switchTab('history')">📋 Lịch Sử</button>
+        <button class="tab-btn" onclick="switchTab('goal')">🎯 Goal</button>
         <button class="tab-btn" onclick="switchTab('dashboard')">📊 Dashboard</button>
         <button class="tab-btn" onclick="switchTab('settings')">⚙️ Cài Đặt</button>
     </div>
@@ -352,11 +507,29 @@
                                 ℹ️ Chỉ ghi nhận hành vi quan sát được
                             </div>
                             <div class="form-group">
-                                <label>Tên trẻ</label>
+                                <div class="form-group-header">
+                                    <label>Tên trẻ</label>
+                                    <div class="tooltip-icon">
+                                        ❓
+                                        <div class="tooltip-box">
+                                            <strong>📌 Tên trẻ</strong><br>
+                                            Nhập tên đầy đủ của trẻ
+                                        </div>
+                                    </div>
+                                </div>
                                 <input type="text" id="childName" placeholder="Nhập tên">
                             </div>
                             <div class="form-group">
-                                <label>Ngày sinh</label>
+                                <div class="form-group-header">
+                                    <label>Ngày sinh</label>
+                                    <div class="tooltip-icon">
+                                        ❓
+                                        <div class="tooltip-box">
+                                            <strong>📌 Ngày sinh</strong><br>
+                                            Dùng để tính tuổi tự động
+                                        </div>
+                                    </div>
+                                </div>
                                 <input type="date" id="birthDate">
                             </div>
                             <div class="form-group">
@@ -377,23 +550,6 @@
                         </div>
                     </div>
                 </div>
-                <div>
-                    <div class="card">
-                        <div class="card-header" style="background: #10b981;">💡 Hướng Dẫn</div>
-                        <div class="card-body">
-                            <p><strong>Behavior Tracker</strong></p>
-                            <p style="color: #64748b; font-size: 0.875rem; margin-bottom: 1rem;">Ứng dụng theo dõi hành vi trẻ dựa trên Evidence-Based Parenting</p>
-                            <p style="font-weight: 600; margin-bottom: 0.5rem;">📌 Tính Năng:</p>
-                            <ul style="font-size: 0.875rem; list-style: none; color: #64748b;">
-                                <li>✓ Quản lý hồ sơ trẻ</li>
-                                <li>✓ Ghi nhận chi tiết bữa ăn</li>
-                                <li>✓ Xem lịch sử đầy đủ</li>
-                                <li>✓ Biểu đồ thống kê</li>
-                                <li>✓ Xuất dữ liệu CSV/JSON</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -404,24 +560,66 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="form-group">
-                            <label>Ngày</label>
+                            <div class="form-group-header">
+                                <label>Ngày</label>
+                                <div class="tooltip-icon">
+                                    ❓
+                                    <div class="tooltip-box">
+                                        <strong>📌 Ngày</strong><br>
+                                        Chọn ngày xảy ra bữa ăn
+                                    </div>
+                                </div>
+                            </div>
                             <input type="date" id="mealDate">
                         </div>
                         <div class="form-group">
-                            <label>Loại bữa</label>
+                            <div class="form-group-header">
+                                <label>Loại bữa</label>
+                                <div class="tooltip-icon">
+                                    ❓
+                                    <div class="tooltip-box">
+                                        <strong>📌 Loại bữa</strong><br>
+                                        🌅 Sáng: 06:00-08:00<br>
+                                        ☕ Bữa Phụ 1: 10:00<br>
+                                        🌞 Trưa: 12:00-13:00<br>
+                                        🍵 Bữa Phụ 2: 15:00<br>
+                                        🌙 Tối: 18:00-19:00
+                                    </div>
+                                </div>
+                            </div>
                             <select id="mealType">
                                 <option value="">Chọn</option>
                                 <option value="breakfast">🌅 Sáng</option>
+                                <option value="snack1">☕ Bữa Phụ 1</option>
                                 <option value="lunch">🌞 Trưa</option>
+                                <option value="snack2">🍵 Bữa Phụ 2</option>
                                 <option value="dinner">🌙 Tối</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Giờ bắt đầu</label>
+                            <div class="form-group-header">
+                                <label>Giờ bắt đầu</label>
+                                <div class="tooltip-icon">
+                                    ❓
+                                    <div class="tooltip-box">
+                                        <strong>📌 Giờ bắt đầu</strong><br>
+                                        Ghi lúc trẻ bắt đầu ăn
+                                    </div>
+                                </div>
+                            </div>
                             <input type="time" id="startTime">
                         </div>
                         <div class="form-group">
-                            <label>Giờ kết thúc</label>
+                            <div class="form-group-header">
+                                <label>Giờ kết thúc</label>
+                                <div class="tooltip-icon">
+                                    ❓
+                                    <div class="tooltip-box">
+                                        <strong>📌 Giờ kết thúc</strong><br>
+                                        Ghi lúc trẻ rời khỏi ghế/bàn ăn
+                                    </div>
+                                </div>
+                            </div>
                             <input type="time" id="endTime">
                         </div>
                         <div class="form-group">
@@ -429,7 +627,21 @@
                             <input type="text" id="totalTime" readonly value="0">
                         </div>
                         <div class="form-group">
-                            <label>% hoàn thành</label>
+                            <div class="form-group-header">
+                                <label>% hoàn thành</label>
+                                <div class="tooltip-icon">
+                                    ❓
+                                    <div class="tooltip-box">
+                                        <strong>📌 % Hoàn Thành</strong><br>
+                                        Ước tính trẻ ăn bao nhiêu %<br><br>
+                                        📝 Ví dụ:<br>
+                                        • 100% = ăn hết phần<br>
+                                        • 75% = ăn 3/4 phần<br>
+                                        • 50% = ăn nửa phần<br>
+                                        • 25% = ăn 1/4 phần
+                                    </div>
+                                </div>
+                            </div>
                             <select id="mealCompletion">
                                 <option value="">Chọn</option>
                                 <option value="100">100%</option>
@@ -442,26 +654,86 @@
 
                     <div class="row">
                         <div class="form-group">
-                            <label>Lần nhắc ăn</label>
+                            <div class="form-group-header">
+                                <label>Lần nhắc ăn</label>
+                                <div class="tooltip-icon">
+                                    ❓
+                                    <div class="tooltip-box">
+                                        <strong>📌 Lần Nhắc Ăn</strong><br>
+                                        Số lần bạn phải nhắc trẻ ăn<br><br>
+                                        📝 Ví dụ:<br>
+                                        • "Ăn nhanh lên" = 1 lần<br>
+                                        • Nhắc lại = +1 lần
+                                    </div>
+                                </div>
+                            </div>
                             <input type="number" id="eatingReminders" min="0" value="0">
                         </div>
                         <div class="form-group">
-                            <label>Lần khóc</label>
+                            <div class="form-group-header">
+                                <label>Lần khóc</label>
+                                <div class="tooltip-icon">
+                                    ❓
+                                    <div class="tooltip-box">
+                                        <strong>📌 Lần Khóc</strong><br>
+                                        Ghi số lần trẻ khóc trong bữa<br><br>
+                                        📝 Ví dụ:<br>
+                                        • Khóc 1 lần rồi dừng = 1<br>
+                                        • Khóc 2 lần rời ghế = 2<br>
+                                        • Khóc liên tục = 1
+                                    </div>
+                                </div>
+                            </div>
                             <input type="number" id="cryingCount" min="0" value="0">
                         </div>
                         <div class="form-group">
-                            <label>Rời ghế</label>
+                            <div class="form-group-header">
+                                <label>Rời ghế</label>
+                                <div class="tooltip-icon">
+                                    ❓
+                                    <div class="tooltip-box">
+                                        <strong>📌 Rời Ghế</strong><br>
+                                        Số lần trẻ rời khỏi ghế/bàn ăn<br><br>
+                                        📝 Ví dụ:<br>
+                                        • Rời 1 lần = 1<br>
+                                        • Rời nhiều lần = ghi tổng
+                                    </div>
+                                </div>
+                            </div>
                             <input type="number" id="leavingChairCount" min="0" value="0">
                         </div>
                         <div class="form-group">
-                            <label>Ngậm thức ăn</label>
+                            <div class="form-group-header">
+                                <label>Ngậm thức ăn</label>
+                                <div class="tooltip-icon">
+                                    ❓
+                                    <div class="tooltip-box">
+                                        <strong>📌 Ngậm Thức Ăn</strong><br>
+                                        Số lần trẻ ngậm/giữ thức ăn trong miệng<br><br>
+                                        📝 Ví dụ:<br>
+                                        • Ngậm rồi không nuốt = 1<br>
+                                        • Lặp lại nhiều = ghi tổng
+                                    </div>
+                                </div>
+                            </div>
                             <input type="number" id="mouthHoldingCount" min="0" value="0">
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="form-group">
-                            <label>Cảm xúc trẻ</label>
+                            <div class="form-group-header">
+                                <label>Cảm xúc trẻ</label>
+                                <div class="tooltip-icon">
+                                    ❓
+                                    <div class="tooltip-box">
+                                        <strong>📌 Cảm Xúc Trẻ</strong><br><br>
+                                        😊 Bình tĩnh: Không khóc, chủ động ăn<br>
+                                        😐 Hơi khó chịu: Hơi cau có, chậm ăn<br>
+                                        😢 Khóc: Khóc thường xuyên
+                                    </div>
+                                </div>
+                            </div>
                             <select id="childEmotion">
                                 <option value="">Chọn</option>
                                 <option value="calm">😊 Bình tĩnh</option>
@@ -470,7 +742,18 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Căng thẳng người lớn</label>
+                            <div class="form-group-header">
+                                <label>Căng thẳng người lớn</label>
+                                <div class="tooltip-icon">
+                                    ❓
+                                    <div class="tooltip-box">
+                                        <strong>📌 Căng Thẳng Người Lớn</strong><br><br>
+                                        😊 Bình tĩnh: Mình ổn, kiên nhẫn<br>
+                                        😠 Căng thẳng: Hơi bực, nhanh giận<br>
+                                        😡 Tức giận: Rất giận, nói to
+                                    </div>
+                                </div>
+                            </div>
                             <select id="caregiverStress">
                                 <option value="">Chọn</option>
                                 <option value="calm">😊 Bình tĩnh</option>
@@ -481,7 +764,20 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Ghi chú</label>
+                        <div class="form-group-header">
+                            <label>Ghi chú</label>
+                            <div class="tooltip-icon">
+                                ❓
+                                <div class="tooltip-box">
+                                    <strong>📌 Ghi Chú</strong><br>
+                                    Chi tiết khác về bữa ăn<br><br>
+                                    📝 Ví dụ:<br>
+                                    • Trẻ bị ho<br>
+                                    • Quá mệt<br>
+                                    • Ăn gì hôm nay
+                                </div>
+                            </div>
+                        </div>
                         <textarea id="mealNotes" rows="3" placeholder="Ghi nhận chi tiết..."></textarea>
                     </div>
 
@@ -503,7 +799,9 @@
                         <select id="historyFilterMealType">
                             <option value="">Tất cả bữa</option>
                             <option value="breakfast">🌅 Sáng</option>
+                            <option value="snack1">☕ Bữa Phụ 1</option>
                             <option value="lunch">🌞 Trưa</option>
+                            <option value="snack2">🍵 Bữa Phụ 2</option>
                             <option value="dinner">🌙 Tối</option>
                         </select>
                         <button class="w-100" onclick="applyHistoryFilters()">🔍 Tìm Kiếm</button>
@@ -532,6 +830,155 @@
             </div>
         </div>
 
+        <!-- GOAL TRACKING TAB -->
+        <div class="tab-content" id="goal">
+            <div class="card">
+                <div class="card-header">🎯 Goal Tracking (Alan Kazdin Method)</div>
+                <div class="card-body">
+                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem;">
+                        <p style="font-size: 0.9rem; color: #0c4a6e;">
+                            <strong>📌 Hướng dẫn:</strong> Thiết lập mục tiêu cải thiện hành vi ăn. Hệ thống sẽ tự động tracking hàng ngày.
+                        </p>
+                    </div>
+
+                    <div class="card" style="border-left: 4px solid #10b981;">
+                        <div class="card-header" style="background: #10b981;">➕ Tạo Goal Mới</div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="form-group-header">
+                                        <label>Loại Goal</label>
+                                        <div class="tooltip-icon">
+                                            ❓
+                                            <div class="tooltip-box">
+                                                <strong>📌 Loại Goal</strong><br><br>
+                                                💯 Hoàn thành: Tăng % ăn<br>
+                                                ⬇️ Giảm hành vi: Giảm khóc, rời ghế<br>
+                                                ⬆️ Tăng hành vi: Tăng bình tĩnh
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <select id="goalTypeSelect" onchange="updateGoalForm()">
+                                        <option value="">Chọn loại</option>
+                                        <option value="completion">💯 Hoàn thành %</option>
+                                        <option value="reduce">⬇️ Giảm hành vi</option>
+                                        <option value="increase">⬆️ Tăng hành vi</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Completion Goal -->
+                            <div id="completionGoalForm" style="display: none;">
+                                <div class="row">
+                                    <div class="form-group">
+                                        <label>Target (%):</label>
+                                        <input type="number" id="completionTarget" min="25" max="100" step="5" value="80">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Reduce Behavior Goal -->
+                            <div id="reduceBehaviorForm" style="display: none;">
+                                <div class="row">
+                                    <div class="form-group">
+                                        <div class="form-group-header">
+                                            <label>Hành vi</label>
+                                            <div class="tooltip-icon">
+                                                ❓
+                                                <div class="tooltip-box">
+                                                    <strong>📌 Hành Vi Cần Giảm</strong><br><br>
+                                                    Khóc: Giảm số lần khóc<br>
+                                                    Rời Ghế: Giảm rời khỏi ghế<br>
+                                                    Ngậm: Giảm ngậm thức ăn
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <select id="reduceBehavior">
+                                            <option value="">Chọn</option>
+                                            <option value="crying">😢 Khóc</option>
+                                            <option value="leaving">👣 Rời Ghế</option>
+                                            <option value="holding">👄 Ngậm Thức Ăn</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Giảm xuống (lần/bữa):</label>
+                                        <input type="number" id="reduceTarget" min="0" max="10" value="1">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Increase Behavior Goal -->
+                            <div id="increaseBehaviorForm" style="display: none;">
+                                <div class="row">
+                                    <div class="form-group">
+                                        <div class="form-group-header">
+                                            <label>Hành vi</label>
+                                            <div class="tooltip-icon">
+                                                ❓
+                                                <div class="tooltip-box">
+                                                    <strong>📌 Hành Vi Cần Tăng</strong><br><br>
+                                                    Bình Tĩnh: Trẻ ăn yên tĩnh<br>
+                                                    Nhanh Ăn: Ăn nhanh hơn
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <select id="increaseBehavior">
+                                            <option value="">Chọn</option>
+                                            <option value="calm">😊 Bình Tĩnh</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Tăng lên (ngày/tuần):</label>
+                                        <input type="number" id="increaseTarget" min="1" max="7" value="5">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Common Fields -->
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="form-group-header">
+                                        <label>Thời hạn</label>
+                                        <div class="tooltip-icon">
+                                            ❓
+                                            <div class="tooltip-box">
+                                                <strong>📌 Thời Hạn</strong><br><br>
+                                                Chọn khoảng thời gian để tracking goal
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <select id="goalDuration">
+                                        <option value="7">1 tuần (7 ngày)</option>
+                                        <option value="14" selected>2 tuần (14 ngày)</option>
+                                        <option value="30">1 tháng (30 ngày)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <div class="form-group-header">
+                                        <label>Ngày bắt đầu</label>
+                                        <div class="tooltip-icon">
+                                            ❓
+                                            <div class="tooltip-box">
+                                                <strong>📌 Ngày Bắt Đầu</strong><br><br>
+                                                Goal sẽ bắt đầu tính từ ngày này
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="date" id="goalStartDate">
+                                </div>
+                            </div>
+
+                            <button class="w-100" onclick="createGoal()" style="background: #10b981;">💾 Tạo Goal</button>
+                        </div>
+                    </div>
+
+                    <!-- Goals List -->
+                    <h3 style="margin-top: 2rem; margin-bottom: 1rem;">📊 Goals Hiện Tại</h3>
+                    <div id="goalsList"></div>
+                </div>
+            </div>
+        </div>
+
         <!-- DASHBOARD TAB -->
         <div class="tab-content" id="dashboard">
             <div class="card">
@@ -552,9 +999,13 @@
             <div class="card">
                 <div class="card-header">⚙️ Cài Đặt & Dữ Liệu</div>
                 <div class="card-body">
-                    <h3 style="margin-bottom: 1rem;">📤 Xuất Dữ Liệu</h3>
+                    <h3 style="margin-bottom: 1rem;">📤 Backup & Khôi Phục</h3>
                     <div class="row">
-                        <button class="w-100" onclick="exportJSON()">📥 Xuất JSON</button>
+                        <button class="w-100" onclick="exportJSON()">💾 Backup Dữ Liệu</button>
+                        <button class="w-100" onclick="importJSON()">🔄 Khôi Phục</button>
+                    </div>
+                    <h3 style="margin-bottom: 1rem; margin-top: 2rem;">📊 Xuất Báo Cáo</h3>
+                    <div class="row">
                         <button class="w-100" onclick="exportCSV()">📥 Xuất CSV</button>
                     </div>
                     <h3 style="margin-bottom: 1rem; margin-top: 2rem;">💾 Dữ Liệu</h3>
@@ -566,6 +1017,9 @@
             </div>
         </div>
     </div>
+
+    <!-- HIDDEN FILE INPUT FOR IMPORT -->
+    <input type="file" id="importFileInput" style="display: none;" accept=".json" onchange="handleFileImport(event)">
 
     <!-- TOAST -->
     <div class="toast-container" id="toastContainer"></div>
@@ -618,7 +1072,8 @@
         // ==================== DATA ====================
         let app = {
             profile: { name: '', birthDate: '', height: 0, weight: 0 },
-            meals: []
+            meals: [],
+            goals: []
         };
 
         function loadData() {
@@ -727,6 +1182,7 @@
             showToast('Bữa ăn đã lưu', 'success');
             refreshHistory();
             refreshDashboard();
+            updateGoalsTracking();
         }
 
         function clearMealForm() {
@@ -756,11 +1212,17 @@
                 return;
             }
 
-            const types = { breakfast: '🌅 Sáng', lunch: '🌞 Trưa', dinner: '🌙 Tối' };
+            const types = { 
+                breakfast: '🌅 Sáng', 
+                snack1: '☕ Bữa Phụ 1', 
+                lunch: '🌞 Trưa', 
+                snack2: '🍵 Bữa Phụ 2', 
+                dinner: '🌙 Tối' 
+            };
             tbody.innerHTML = meals.map(m => `
                 <tr>
                     <td>${m.date}</td>
-                    <td><span class="badge">${types[m.mealType]}</span></td>
+                    <td><span class="badge">${types[m.mealType] || m.mealType}</span></td>
                     <td>${m.totalTime}m</td>
                     <td>${m.mealCompletion}%</td>
                     <td>${m.eatingReminders}</td>
@@ -786,11 +1248,17 @@
                 return;
             }
 
-            const types = { breakfast: '🌅 Sáng', lunch: '🌞 Trưa', dinner: '🌙 Tối' };
+            const types = { 
+                breakfast: '🌅 Sáng', 
+                snack1: '☕ Bữa Phụ 1', 
+                lunch: '🌞 Trưa', 
+                snack2: '🍵 Bữa Phụ 2', 
+                dinner: '🌙 Tối' 
+            };
             tbody.innerHTML = meals.map(m => `
                 <tr>
                     <td>${m.date}</td>
-                    <td><span class="badge">${types[m.mealType]}</span></td>
+                    <td><span class="badge">${types[m.mealType] || m.mealType}</span></td>
                     <td>${m.totalTime}m</td>
                     <td>${m.mealCompletion}%</td>
                     <td>${m.eatingReminders}</td>
@@ -806,7 +1274,205 @@
                 saveData();
                 refreshHistory();
                 refreshDashboard();
+                updateGoalsTracking();
                 showToast('Đã xóa', 'success');
+            }
+        }
+
+        // ==================== GOAL TRACKING ====================
+        function updateGoalForm() {
+            const goalType = document.getElementById('goalTypeSelect').value;
+            document.getElementById('completionGoalForm').style.display = goalType === 'completion' ? 'block' : 'none';
+            document.getElementById('reduceBehaviorForm').style.display = goalType === 'reduce' ? 'block' : 'none';
+            document.getElementById('increaseBehaviorForm').style.display = goalType === 'increase' ? 'block' : 'none';
+        }
+
+        function createGoal() {
+            const goalType = document.getElementById('goalTypeSelect').value;
+            const duration = parseInt(document.getElementById('goalDuration').value);
+            const startDate = document.getElementById('goalStartDate').value;
+
+            if (!goalType || !startDate) {
+                showToast('Vui lòng điền đủ thông tin', 'error');
+                return;
+            }
+
+            let goal = {
+                id: Date.now().toString(),
+                type: goalType,
+                startDate,
+                duration,
+                createdDate: new Date().toISOString(),
+                tracking: []
+            };
+
+            if (goalType === 'completion') {
+                goal.target = parseInt(document.getElementById('completionTarget').value);
+            } else if (goalType === 'reduce') {
+                goal.behavior = document.getElementById('reduceBehavior').value;
+                goal.target = parseInt(document.getElementById('reduceTarget').value);
+            } else if (goalType === 'increase') {
+                goal.behavior = document.getElementById('increaseBehavior').value;
+                goal.target = parseInt(document.getElementById('increaseTarget').value);
+            }
+
+            app.goals.push(goal);
+            saveData();
+            clearGoalForm();
+            refreshGoalsList();
+            updateGoalsTracking();
+            showToast('Goal đã tạo', 'success');
+        }
+
+        function clearGoalForm() {
+            document.getElementById('goalTypeSelect').value = '';
+            document.getElementById('completionTarget').value = '80';
+            document.getElementById('reduceBehavior').value = '';
+            document.getElementById('reduceTarget').value = '1';
+            document.getElementById('increaseBehavior').value = '';
+            document.getElementById('increaseTarget').value = '5';
+            document.getElementById('goalDuration').value = '14';
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('goalStartDate').value = today;
+            updateGoalForm();
+        }
+
+        function updateGoalsTracking() {
+            const today = new Date().toISOString().split('T')[0];
+            
+            app.goals.forEach(goal => {
+                if (goal.tracking.find(t => t.date === today)) return;
+
+                let dayMetrics = null;
+                
+                if (goal.type === 'completion') {
+                    const mealsToday = app.meals.filter(m => m.date === today);
+                    if (mealsToday.length > 0) {
+                        const avgCompletion = mealsToday.reduce((sum, m) => sum + m.mealCompletion, 0) / mealsToday.length;
+                        dayMetrics = { achieved: avgCompletion >= goal.target };
+                    }
+                } else if (goal.type === 'reduce') {
+                    const mealsToday = app.meals.filter(m => m.date === today);
+                    if (mealsToday.length > 0) {
+                        let total = 0;
+                        mealsToday.forEach(m => {
+                            if (goal.behavior === 'crying') total += m.cryingCount;
+                            else if (goal.behavior === 'leaving') total += m.leavingChairCount;
+                            else if (goal.behavior === 'holding') total += m.mouthHoldingCount;
+                        });
+                        const avg = total / mealsToday.length;
+                        dayMetrics = { achieved: avg <= goal.target };
+                    }
+                } else if (goal.type === 'increase') {
+                    const mealsToday = app.meals.filter(m => m.date === today);
+                    if (mealsToday.length > 0) {
+                        const calmMeals = mealsToday.filter(m => m.childEmotion === 'calm').length;
+                        dayMetrics = { achieved: calmMeals > 0 };
+                    }
+                }
+
+                if (dayMetrics) {
+                    goal.tracking.push({ date: today, ...dayMetrics });
+                }
+            });
+
+            saveData();
+            refreshGoalsList();
+        }
+
+        function getGoalProgress(goal) {
+            const endDate = new Date(goal.startDate);
+            endDate.setDate(endDate.getDate() + goal.duration);
+
+            const tracking = goal.tracking.filter(t => {
+                const trackDate = new Date(t.date);
+                return trackDate >= new Date(goal.startDate) && trackDate <= endDate;
+            });
+
+            const achieved = tracking.filter(t => t.achieved).length;
+            const total = Math.min(goal.duration, tracking.length);
+
+            return { achieved, total, progress: total > 0 ? Math.round((achieved / total) * 100) : 0 };
+        }
+
+        function getGoalBadge(progress) {
+            if (progress.achieved >= 3) {
+                return { icon: '🌟', label: 'Gold', type: 'gold', points: 10 * progress.achieved };
+            } else if (progress.achieved >= 2) {
+                return { icon: '🥈', label: 'Silver', type: 'silver', points: 10 * progress.achieved };
+            }
+            return { icon: '⭐', label: 'Pending', type: '', points: 10 * progress.achieved };
+        }
+
+        function refreshGoalsList() {
+            const goalsList = document.getElementById('goalsList');
+            if (app.goals.length === 0) {
+                goalsList.innerHTML = '<p style="color: #64748b; text-align: center;">Chưa có goal nào</p>';
+                return;
+            }
+
+            const goalTypeNames = {
+                completion: '💯 Hoàn thành %',
+                reduce: '⬇️ Giảm hành vi',
+                increase: '⬆️ Tăng hành vi'
+            };
+
+            goalsList.innerHTML = app.goals.map(goal => {
+                const progress = getGoalProgress(goal);
+                const badge = getGoalBadge(progress);
+                const endDate = new Date(goal.startDate);
+                endDate.setDate(endDate.getDate() + goal.duration);
+
+                let description = '';
+                if (goal.type === 'completion') {
+                    description = `Target: ${goal.target}%`;
+                } else if (goal.type === 'reduce') {
+                    const behaviors = { crying: 'Khóc', leaving: 'Rời Ghế', holding: 'Ngậm' };
+                    description = `Giảm ${behaviors[goal.behavior]} xuống ≤ ${goal.target} lần/bữa`;
+                } else if (goal.type === 'increase') {
+                    description = `Tăng ngày bình tĩnh ≥ ${goal.target} ngày/tuần`;
+                }
+
+                return `
+                    <div class="goal-item">
+                        <div class="goal-header">
+                            <span>${goalTypeNames[goal.type]}</span>
+                            <button style="background: #ef4444; padding: 0.5rem 1rem;" onclick="deleteGoal('${goal.id}')">🗑️ Xóa</button>
+                        </div>
+                        <div class="goal-info">
+                            ${description}<br>
+                            ⏱️ ${goal.startDate} → ${endDate.toISOString().split('T')[0]}
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress.progress}%;">
+                                ${progress.progress}%
+                            </div>
+                        </div>
+                        <div class="goal-stats">
+                            <div class="goal-stat">
+                                <div class="goal-stat-value">${progress.achieved}/${progress.total}</div>
+                                <div class="goal-stat-label">📅 Ngày Đạt</div>
+                            </div>
+                            <div class="goal-stat">
+                                <div class="goal-stat-value">${badge.icon}</div>
+                                <div class="goal-stat-label">${badge.label}</div>
+                            </div>
+                            <div class="goal-stat">
+                                <div class="goal-stat-value">${badge.points}</div>
+                                <div class="goal-stat-label">⭐ Points</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function deleteGoal(id) {
+            if (confirm('Xóa goal?')) {
+                app.goals = app.goals.filter(g => g.id !== id);
+                saveData();
+                refreshGoalsList();
+                showToast('Goal đã xóa', 'success');
             }
         }
 
@@ -886,17 +1552,48 @@
             document.getElementById('dashboardStats').innerHTML = html;
         }
 
-        // ==================== EXPORT ====================
+        // ==================== EXPORT/IMPORT ====================
         function exportJSON() {
-            const data = { profile: app.profile, meals: app.meals, exportDate: new Date().toISOString() };
+            const data = { profile: app.profile, meals: app.meals, goals: app.goals, exportDate: new Date().toISOString() };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `tracker-${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `backup-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
             URL.revokeObjectURL(url);
-            showToast('Đã xuất JSON', 'success');
+            showToast('Backup thành công', 'success');
+        }
+
+        function importJSON() {
+            document.getElementById('importFileInput').click();
+        }
+
+        function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.profile && data.meals !== undefined) {
+                        app = data;
+                        saveData();
+                        loadProfileUI();
+                        refreshHistory();
+                        refreshGoalsList();
+                        refreshDashboard();
+                        showToast('Khôi phục thành công', 'success');
+                    } else {
+                        showToast('File không hợp lệ', 'error');
+                    }
+                } catch (err) {
+                    showToast('Lỗi khi đọc file', 'error');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
         }
 
         function exportCSV() {
@@ -906,7 +1603,13 @@
             }
 
             let csv = 'Ngày,Bữa,Giờ Bắt Đầu,Thời Gian,Hoàn Thành,Nhắc,Khóc,Rời Ghế,Ghi Chú\n';
-            const types = { breakfast: 'Sáng', lunch: 'Trưa', dinner: 'Tối' };
+            const types = { 
+                breakfast: 'Sáng', 
+                snack1: 'Bữa Phụ 1', 
+                lunch: 'Trưa', 
+                snack2: 'Bữa Phụ 2', 
+                dinner: 'Tối' 
+            };
             app.meals.forEach(m => {
                 csv += `${m.date},${types[m.mealType] || m.mealType},${m.startTime},${m.totalTime},${m.mealCompletion},${m.eatingReminders},${m.cryingCount},${m.leavingChairCount},"${m.notes}"\n`;
             });
@@ -915,10 +1618,10 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `tracker-${new Date().toISOString().split('T')[0]}.csv`;
+            a.download = `report-${new Date().toISOString().split('T')[0]}.csv`;
             a.click();
             URL.revokeObjectURL(url);
-            showToast('Đã xuất CSV', 'success');
+            showToast('Xuất CSV thành công', 'success');
         }
 
         // ==================== UI ====================
@@ -931,6 +1634,7 @@
 
             if (id === 'history') refreshHistory();
             if (id === 'dashboard') refreshDashboard();
+            if (id === 'goal') refreshGoalsList();
         }
 
         function toggleDarkMode() {
@@ -949,7 +1653,7 @@
 
         function clearAllData() {
             if (confirm('Xóa tất cả dữ liệu?')) {
-                app = { profile: { name: '', birthDate: '', height: 0, weight: 0 }, meals: [] };
+                app = { profile: { name: '', birthDate: '', height: 0, weight: 0 }, meals: [], goals: [] };
                 Storage.clear();
                 location.reload();
             }
@@ -961,6 +1665,7 @@
             loadData();
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('mealDate').value = today;
+            document.getElementById('goalStartDate').value = today;
 
             document.getElementById('startTime').addEventListener('change', calculateMealTime);
             document.getElementById('endTime').addEventListener('change', calculateMealTime);
@@ -971,6 +1676,8 @@
 
             refreshHistory();
             refreshDashboard();
+            refreshGoalsList();
+            updateGoalsTracking();
         });
     </script>
 </body>
