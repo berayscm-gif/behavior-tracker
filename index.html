@@ -3,1681 +3,1168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Behavior Tracker - Goal Tracking</title>
+    <title>Behavior Tracker - Theo Dõi Hành Vi Trẻ Em</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
-            color: #1e293b;
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-
-        body.dark-mode {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            color: #f1f5f9;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         .navbar {
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-            color: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .navbar h1 {
-            font-size: 1.5rem;
-        }
-
-        .navbar-controls {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .btn-icon {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            padding: 0.5rem;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 1.2rem;
-        }
-
-        .btn-icon:hover {
-            background: rgba(255,255,255,0.3);
-        }
-
-        .tabs {
-            display: flex;
-            background: white;
-            border-bottom: 2px solid #e2e8f0;
-            padding: 0 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            flex-wrap: wrap;
-        }
-
-        body.dark-mode .tabs {
-            background: #1e293b;
-            border-color: #334155;
-        }
-
-        .tab-btn {
-            background: none;
-            border: none;
-            padding: 1rem 1.5rem;
-            cursor: pointer;
-            color: #64748b;
-            border-bottom: 3px solid transparent;
-            transition: all 0.2s;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .tab-btn:hover {
-            color: #2563eb;
-        }
-
-        .tab-btn.active {
-            color: #2563eb;
-            border-bottom-color: #2563eb;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .card {
-            background: white;
-            border-left: 4px solid #2563eb;
+            border: none;
             border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 1.5rem;
-            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
         }
 
-        body.dark-mode .card {
-            background: #1e293b;
-            border-color: #2563eb;
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
-        .card-header {
-            background: #2563eb;
-            color: white;
-            padding: 1rem;
-            font-weight: 600;
-        }
+        .card.card-success { border-left-color: var(--success); }
+        .card.card-warning { border-left-color: var(--warning); }
+        .card.card-danger { border-left-color: var(--danger); }
 
-        .card-body {
-            padding: 1.5rem;
-        }
-
-        .row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-            position: relative;
-        }
-
-        .form-group-header {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        label {
-            display: block;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        .tooltip-icon {
-            font-size: 1.2rem;
-            cursor: help;
-            color: #2563eb;
-            position: relative;
-        }
-
-        .tooltip-box {
-            position: absolute;
-            bottom: 100%;
-            left: 0;
-            background: #1e293b;
-            color: white;
-            padding: 0.75rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            width: 250px;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.2s;
-            margin-bottom: 0.5rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            line-height: 1.5;
-            pointer-events: none;
-        }
-
-        .tooltip-box.dark {
-            background: #f1f5f9;
-            color: #1e293b;
-        }
-
-        .tooltip-icon:hover .tooltip-box {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .tooltip-box::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 10px;
-            border: 6px solid transparent;
-            border-top-color: #1e293b;
-        }
-
-        .tooltip-box.dark::after {
-            border-top-color: #f1f5f9;
-        }
-
-        input[type="text"],
-        input[type="date"],
-        input[type="time"],
-        input[type="number"],
-        select,
-        textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            font-family: inherit;
-            transition: border 0.2s;
-        }
-
-        body.dark-mode input,
-        body.dark-mode select,
-        body.dark-mode textarea {
-            background: #0f172a;
-            color: #f1f5f9;
-            border-color: #334155;
-        }
-
-        input:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        button {
-            background: #2563eb;
-            color: white;
+        .nav-tabs .nav-link {
+            color: #64748b;
             border: none;
             padding: 0.75rem 1.5rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-            font-size: 0.9rem;
         }
 
-        button:hover {
-            background: #1d4ed8;
+        .nav-tabs .nav-link:hover {
+            color: var(--primary);
         }
 
-        button.secondary {
-            background: #e2e8f0;
-            color: #1e293b;
+        .nav-tabs .nav-link.active {
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+            background: transparent;
         }
 
-        button.secondary:hover {
-            background: #cbd5e1;
-        }
-
-        button.danger {
-            background: #ef4444;
-        }
-
-        button.danger:hover {
-            background: #dc2626;
-        }
-
-        .w-100 {
-            width: 100%;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 1.5rem;
-            font-size: 0.875rem;
-        }
-
-        th {
-            background: #f1f5f9;
-            padding: 0.75rem;
-            text-align: left;
-            font-weight: 600;
-            border-bottom: 2px solid #e2e8f0;
-        }
-
-        body.dark-mode th {
-            background: #334155;
-        }
-
-        td {
-            padding: 0.75rem;
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 1020;
+            background: white;
             border-bottom: 1px solid #e2e8f0;
         }
 
-        tr:hover {
-            background: rgba(37, 99, 235, 0.05);
-        }
-
-        .badge {
-            display: inline-block;
-            background: #2563eb;
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .badge.gold {
-            background: #f59e0b;
-        }
-
-        .badge.silver {
-            background: #a0aec0;
-        }
-
-        .alert {
+        .scientific-warning {
+            background: #e0f2fe;
+            border-left: 4px solid var(--primary);
+            color: #0c4a6e;
             padding: 1rem;
             border-radius: 4px;
             margin-bottom: 1rem;
-            border-left: 4px solid;
+            font-size: 0.875rem;
         }
 
-        .alert.info {
-            background: #eff6ff;
-            color: #0c4a6e;
-            border-color: #2563eb;
+        .alert-custom {
+            border-radius: 8px;
+            border: none;
         }
 
         .toast-container {
             position: fixed;
-            top: 1rem;
-            right: 1rem;
+            top: 20px;
+            right: 20px;
             z-index: 9999;
         }
 
-        .toast {
-            background: #10b981;
+        .toast-custom {
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
             color: white;
-            padding: 1rem;
-            border-radius: 4px;
-            margin-bottom: 0.5rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            animation: slideIn 0.3s ease;
+            min-width: 300px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
-        .toast.error {
-            background: #ef4444;
+        .toast-custom.success { background: var(--success); }
+        .toast-custom.error { background: var(--danger); }
+        .toast-custom.warning { background: var(--warning); }
+        .toast-custom.info { background: var(--primary); }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 2rem;
         }
 
-        @keyframes slideIn {
-            from { transform: translateX(400px); }
-            to { transform: translateX(0); }
+        .btn-primary {
+            background: var(--primary);
+            border: none;
         }
 
-        .stat-box {
-            text-align: center;
-            padding: 1rem;
+        .btn-primary:hover {
+            background: #1d4ed8;
         }
+
+        .table-hover tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .page-section { margin-bottom: 2rem; }
 
         .stat-value {
-            font-size: 2rem;
+            font-size: 1.75rem;
             font-weight: 700;
-            color: #2563eb;
+            color: var(--primary);
         }
 
         .stat-label {
-            font-size: 0.75rem;
-            color: #64748b;
-            text-transform: uppercase;
-            margin-top: 0.5rem;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 24px;
-            background: #e2e8f0;
-            border-radius: 12px;
-            overflow: hidden;
-            margin: 0.5rem 0;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #2563eb, #1d4ed8);
-            transition: width 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .goal-item {
-            background: #f8fafc;
-            border-left: 4px solid #2563eb;
-            padding: 1rem;
-            border-radius: 4px;
-            margin-bottom: 1rem;
-        }
-
-        body.dark-mode .goal-item {
-            background: #334155;
-        }
-
-        .goal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.75rem;
-            font-weight: 600;
-        }
-
-        .goal-info {
             font-size: 0.875rem;
             color: #64748b;
-            margin-bottom: 0.5rem;
+            text-transform: uppercase;
         }
 
-        body.dark-mode .goal-info {
-            color: #cbd5e1;
+        .badge-info { background: var(--primary); }
+
+        .help-btn {
+            cursor: pointer;
+            font-size: 0.875rem;
+            color: var(--primary);
+            background: none;
+            border: none;
+            padding: 0;
+            margin-left: 4px;
         }
 
-        .goal-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
+        .modal-content {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
-        .goal-stat {
-            text-align: center;
-            padding: 0.75rem;
-            background: white;
-            border-radius: 4px;
+        .action-btn {
+            font-size: 0.875rem;
+            padding: 0.35rem 0.75rem;
+            margin: 0 2px;
         }
 
-        body.dark-mode .goal-stat {
-            background: #1e293b;
+        .btn-group button {
+            border-radius: 0;
         }
 
-        .goal-stat-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #2563eb;
-        }
-
-        .goal-stat-label {
-            font-size: 0.75rem;
-            color: #64748b;
-            margin-top: 0.25rem;
-        }
-
-        @media (max-width: 768px) {
-            .container { padding: 1rem; }
-            .tabs { padding: 0 1rem; }
-            .navbar { padding: 1rem; }
-            .row { grid-template-columns: 1fr; }
-            .tooltip-box { width: 200px; }
-        }
+        .btn-group button:first-child { border-radius: 0.375rem 0 0 0.375rem; }
+        .btn-group button:last-child { border-radius: 0 0.375rem 0.375rem 0; }
     </style>
 </head>
 <body>
-    <!-- NAVBAR -->
-    <div class="navbar">
-        <h1>❤️ Behavior Tracker</h1>
-        <div class="navbar-controls">
-            <button class="btn-icon" onclick="toggleDarkMode()" title="Dark Mode">🌙</button>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="bi bi-heart-pulse"></i> Behavior Tracker
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                            <i class="bi bi-gear"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container-fluid py-4">
+        <!-- Tabs Navigation -->
+        <div class="sticky-nav mb-4">
+            <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button">
+                        <i class="bi bi-person-circle"></i> Hồ Sơ
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="meal-tab" data-bs-toggle="tab" data-bs-target="#meal" type="button">
+                        <i class="bi bi-cup-straw"></i> Nhật Ký Bữa Ăn
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button">
+                        <i class="bi bi-clock-history"></i> Lịch Sử
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button">
+                        <i class="bi bi-graph-up"></i> Dashboard
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="goals-tab" data-bs-toggle="tab" data-bs-target="#goals" type="button">
+                        <i class="bi bi-target"></i> Mục Tiêu
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics" type="button">
+                        <i class="bi bi-bar-chart"></i> Phân Tích
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="mainTabContent">
+            <!-- Profile Tab -->
+            <div class="tab-pane fade show active" id="profile" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="card page-section">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0">
+                                    <i class="bi bi-person-circle"></i> Thông Tin Trẻ
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="scientific-warning">
+                                    <i class="bi bi-info-circle"></i> Chỉ ghi nhận hành vi quan sát được
+                                </div>
+                                <form id="profileForm">
+                                    <div class="mb-3">
+                                        <label class="form-label">Tên trẻ</label>
+                                        <input type="text" class="form-control" id="childName" placeholder="Nhập tên trẻ">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Ngày sinh</label>
+                                        <input type="date" class="form-control" id="birthDate">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Tuổi (tự động)</label>
+                                        <input type="text" class="form-control" id="childAge" readonly>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Chiều cao (cm)</label>
+                                                <input type="number" class="form-control" id="childHeight" step="0.1">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Cân nặng (kg)</label>
+                                                <input type="number" class="form-control" id="childWeight" step="0.1">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-primary w-100" onclick="UIManager.saveProfile()">
+                                        <i class="bi bi-save"></i> Lưu Hồ Sơ
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card page-section">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0"><i class="bi bi-info-circle"></i> Hướng Dẫn</h5>
+                            </div>
+                            <div class="card-body">
+                                <h6>Behavior Tracker</h6>
+                                <p class="text-muted small">Ứng dụng theo dõi hành vi trẻ dựa trên Evidence-Based Parenting.</p>
+                                <h6 class="mt-3">Tính Năng:</h6>
+                                <ul class="small">
+                                    <li><strong>Hồ Sơ:</strong> Quản lý thông tin trẻ</li>
+                                    <li><strong>Nhật Ký:</strong> Ghi nhận chi tiết bữa ăn</li>
+                                    <li><strong>Lịch Sử:</strong> Xem và chỉnh sửa bản ghi</li>
+                                    <li><strong>Dashboard:</strong> Biểu đồ dữ liệu</li>
+                                    <li><strong>Mục Tiêu:</strong> Theo dõi tiến độ</li>
+                                    <li><strong>Phân Tích:</strong> Phát hiện xu hướng</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meal Entry Tab -->
+            <div class="tab-pane fade" id="meal" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card page-section">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0"><i class="bi bi-cup-straw"></i> Nhập Liệu Bữa Ăn</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="mealForm">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Ngày</label>
+                                                <input type="date" class="form-control" id="mealDate">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Loại bữa ăn</label>
+                                                <select class="form-select" id="mealType">
+                                                    <option value="">Chọn</option>
+                                                    <option value="breakfast">Sáng</option>
+                                                    <option value="lunch">Trưa</option>
+                                                    <option value="dinner">Tối</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Giờ bắt đầu</label>
+                                                <input type="time" class="form-control" id="startTime">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Giờ kết thúc</label>
+                                                <input type="time" class="form-control" id="endTime">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Tổng thời gian (phút)</label>
+                                        <input type="text" class="form-control" id="totalTime" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">% hoàn thành</label>
+                                        <select class="form-select" id="mealCompletion">
+                                            <option value="">Chọn</option>
+                                            <option value="100">100%</option>
+                                            <option value="75">75%</option>
+                                            <option value="50">50%</option>
+                                            <option value="25">25%</option>
+                                        </select>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Số lần nhắc ăn</label>
+                                                <input type="number" class="form-control" id="eatingReminders" min="0" value="0">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Số lần khóc</label>
+                                                <input type="number" class="form-control" id="cryingCount" min="0" value="0">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Số lần rời ghế</label>
+                                                <input type="number" class="form-control" id="leavingChairCount" min="0" value="0">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Số lần ngậm thức ăn</label>
+                                                <input type="number" class="form-control" id="mouthHoldingCount" min="0" value="0">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Cảm xúc trẻ</label>
+                                        <select class="form-select" id="childEmotion">
+                                            <option value="">Chọn</option>
+                                            <option value="calm">Bình tĩnh</option>
+                                            <option value="slightly_uncomfortable">Hơi khó chịu</option>
+                                            <option value="light_crying">Khóc nhẹ</option>
+                                            <option value="prolonged_crying">Khóc kéo dài</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Căng thẳng người lớn</label>
+                                        <select class="form-select" id="caregiverStress">
+                                            <option value="">Chọn</option>
+                                            <option value="calm">Bình tĩnh</option>
+                                            <option value="slightly_uncomfortable">Khó chịu nhẹ</option>
+                                            <option value="frustrated">Bực bội</option>
+                                            <option value="very_angry">Rất tức giận</option>
+                                            <option value="losing_control">Sắp mất kiểm soát</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Ghi chú</label>
+                                        <textarea class="form-control" id="mealNotes" rows="2"></textarea>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <button type="button" class="btn btn-primary w-100" onclick="UIManager.saveMealEntry()">
+                                                <i class="bi bi-save"></i> Lưu
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <button type="button" class="btn btn-outline-secondary w-100" onclick="UIManager.clearMealForm()">
+                                                <i class="bi bi-arrow-clockwise"></i> Xóa
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card page-section card-success">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="card-title mb-0"><i class="bi bi-lightbulb"></i> Mẹo</h5>
+                            </div>
+                            <div class="card-body">
+                                <h6>Hành Vi Quan Sát Được:</h6>
+                                <ul class="small">
+                                    <li>✓ Rời ghế 5 lần</li>
+                                    <li>✓ Khóc kéo dài</li>
+                                    <li>✓ Ngậm thức ăn</li>
+                                    <li>✓ Từ chối ăn</li>
+                                </ul>
+                                <h6 class="mt-3">Tránh Ghi Nhận:</h6>
+                                <ul class="small">
+                                    <li>✗ Trẻ lười</li>
+                                    <li>✗ Trẻ bướng</li>
+                                    <li>✗ Trẻ không hợp tác</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Tab -->
+            <div class="tab-pane fade" id="history" role="tabpanel">
+                <div class="card page-section">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0"><i class="bi bi-clock-history"></i> Lịch Sử</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <input type="date" class="form-control" id="historyFilterDate" placeholder="Lọc theo ngày">
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="historyFilterMealType">
+                                    <option value="">Tất cả</option>
+                                    <option value="breakfast">Sáng</option>
+                                    <option value="lunch">Trưa</option>
+                                    <option value="dinner">Tối</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <button class="btn btn-primary w-100" onclick="HistoryManager.applyFilters()">
+                                    <i class="bi bi-search"></i> Tìm Kiếm
+                                </button>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Ngày</th>
+                                        <th>Bữa Ăn</th>
+                                        <th>Thời Gian</th>
+                                        <th>% Hoàn</th>
+                                        <th>Nhắc</th>
+                                        <th>Khóc</th>
+                                        <th>Rời Ghế</th>
+                                        <th>Thao Tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyTableBody">
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted">Chưa có dữ liệu</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <ul class="pagination justify-content-center" id="historyPagination"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Tab -->
+            <div class="tab-pane fade" id="dashboard" role="tabpanel">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="btn-group">
+                            <button class="btn btn-outline-primary" onclick="DashboardManager.setTimeRange(7)">7 Ngày</button>
+                            <button class="btn btn-outline-primary active" onclick="DashboardManager.setTimeRange(30)">30 Ngày</button>
+                            <button class="btn btn-outline-primary" onclick="DashboardManager.setTimeRange(0)">Toàn Bộ</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="card page-section">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0">Thời Gian Ăn (Phút)</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="mealTimeChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card page-section">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0">% Hoàn Thành</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="mealCompletionChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="card page-section">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0">Số Lần Khóc</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="cryingChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card page-section">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0">Số Lần Nhắc Ăn</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="remindersChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Goals Tab -->
+            <div class="tab-pane fade" id="goals" role="tabpanel">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <button class="btn btn-primary" onclick="GoalManager.showCreateGoalModal()">
+                            <i class="bi bi-plus-circle"></i> Thêm Mục Tiêu
+                        </button>
+                    </div>
+                </div>
+                <div id="goalsContainer" class="row"></div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div class="tab-pane fade" id="analytics" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card page-section">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0"><i class="bi bi-lightbulb"></i> Phân Tích</h5>
+                            </div>
+                            <div class="card-body" id="analyticsContent">
+                                <p class="text-muted">Chưa có đủ dữ liệu để phân tích</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- TABS -->
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('profile')">👤 Hồ Sơ</button>
-        <button class="tab-btn" onclick="switchTab('meal')">🍽️ Nhập Liệu</button>
-        <button class="tab-btn" onclick="switchTab('history')">📋 Lịch Sử</button>
-        <button class="tab-btn" onclick="switchTab('goal')">🎯 Goal</button>
-        <button class="tab-btn" onclick="switchTab('dashboard')">📊 Dashboard</button>
-        <button class="tab-btn" onclick="switchTab('settings')">⚙️ Cài Đặt</button>
-    </div>
-
-    <!-- CONTAINER -->
-    <div class="container">
-        <!-- PROFILE TAB -->
-        <div class="tab-content active" id="profile">
-            <div class="row">
-                <div>
-                    <div class="card">
-                        <div class="card-header">👤 Thông Tin Trẻ</div>
-                        <div class="card-body">
-                            <div class="alert info">
-                                ℹ️ Chỉ ghi nhận hành vi quan sát được
-                            </div>
-                            <div class="form-group">
-                                <div class="form-group-header">
-                                    <label>Tên trẻ</label>
-                                    <div class="tooltip-icon">
-                                        ❓
-                                        <div class="tooltip-box">
-                                            <strong>📌 Tên trẻ</strong><br>
-                                            Nhập tên đầy đủ của trẻ
-                                        </div>
-                                    </div>
-                                </div>
-                                <input type="text" id="childName" placeholder="Nhập tên">
-                            </div>
-                            <div class="form-group">
-                                <div class="form-group-header">
-                                    <label>Ngày sinh</label>
-                                    <div class="tooltip-icon">
-                                        ❓
-                                        <div class="tooltip-box">
-                                            <strong>📌 Ngày sinh</strong><br>
-                                            Dùng để tính tuổi tự động
-                                        </div>
-                                    </div>
-                                </div>
-                                <input type="date" id="birthDate">
-                            </div>
-                            <div class="form-group">
-                                <label>Tuổi (tự động)</label>
-                                <input type="text" id="childAge" readonly>
-                            </div>
-                            <div class="row">
-                                <div class="form-group">
-                                    <label>Chiều cao (cm)</label>
-                                    <input type="number" id="childHeight" step="0.1" value="0">
-                                </div>
-                                <div class="form-group">
-                                    <label>Cân nặng (kg)</label>
-                                    <input type="number" id="childWeight" step="0.1" value="0">
-                                </div>
-                            </div>
-                            <button class="w-100" onclick="saveProfile()">💾 Lưu Hồ Sơ</button>
-                        </div>
-                    </div>
+    <!-- Modals -->
+    <div class="modal fade" id="settingsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cài Đặt</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-            </div>
-        </div>
-
-        <!-- MEAL ENTRY TAB -->
-        <div class="tab-content" id="meal">
-            <div class="card">
-                <div class="card-header">🍽️ Nhập Liệu Bữa Ăn</div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="form-group">
-                            <div class="form-group-header">
-                                <label>Ngày</label>
-                                <div class="tooltip-icon">
-                                    ❓
-                                    <div class="tooltip-box">
-                                        <strong>📌 Ngày</strong><br>
-                                        Chọn ngày xảy ra bữa ăn
-                                    </div>
-                                </div>
-                            </div>
-                            <input type="date" id="mealDate">
-                        </div>
-                        <div class="form-group">
-                            <div class="form-group-header">
-                                <label>Loại bữa</label>
-                                <div class="tooltip-icon">
-                                    ❓
-                                    <div class="tooltip-box">
-                                        <strong>📌 Loại bữa</strong><br>
-                                        🌅 Sáng: 06:00-08:00<br>
-                                        ☕ Bữa Phụ 1: 10:00<br>
-                                        🌞 Trưa: 12:00-13:00<br>
-                                        🍵 Bữa Phụ 2: 15:00<br>
-                                        🌙 Tối: 18:00-19:00
-                                    </div>
-                                </div>
-                            </div>
-                            <select id="mealType">
-                                <option value="">Chọn</option>
-                                <option value="breakfast">🌅 Sáng</option>
-                                <option value="snack1">☕ Bữa Phụ 1</option>
-                                <option value="lunch">🌞 Trưa</option>
-                                <option value="snack2">🍵 Bữa Phụ 2</option>
-                                <option value="dinner">🌙 Tối</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <div class="form-group-header">
-                                <label>Giờ bắt đầu</label>
-                                <div class="tooltip-icon">
-                                    ❓
-                                    <div class="tooltip-box">
-                                        <strong>📌 Giờ bắt đầu</strong><br>
-                                        Ghi lúc trẻ bắt đầu ăn
-                                    </div>
-                                </div>
-                            </div>
-                            <input type="time" id="startTime">
-                        </div>
-                        <div class="form-group">
-                            <div class="form-group-header">
-                                <label>Giờ kết thúc</label>
-                                <div class="tooltip-icon">
-                                    ❓
-                                    <div class="tooltip-box">
-                                        <strong>📌 Giờ kết thúc</strong><br>
-                                        Ghi lúc trẻ rời khỏi ghế/bàn ăn
-                                    </div>
-                                </div>
-                            </div>
-                            <input type="time" id="endTime">
-                        </div>
-                        <div class="form-group">
-                            <label>Tổng thời gian (phút)</label>
-                            <input type="text" id="totalTime" readonly value="0">
-                        </div>
-                        <div class="form-group">
-                            <div class="form-group-header">
-                                <label>% hoàn thành</label>
-                                <div class="tooltip-icon">
-                                    ❓
-                                    <div class="tooltip-box">
-                                        <strong>📌 % Hoàn Thành</strong><br>
-                                        Ước tính trẻ ăn bao nhiêu %<br><br>
-                                        📝 Ví dụ:<br>
-                                        • 100% = ăn hết phần<br>
-                                        • 75% = ăn 3/4 phần<br>
-                                        • 50% = ăn nửa phần<br>
-                                        • 25% = ăn 1/4 phần
-                                    </div>
-                                </div>
-                            </div>
-                            <select id="mealCompletion">
-                                <option value="">Chọn</option>
-                                <option value="100">100%</option>
-                                <option value="75">75%</option>
-                                <option value="50">50%</option>
-                                <option value="25">25%</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="form-group">
-                            <div class="form-group-header">
-                                <label>Lần nhắc ăn</label>
-                                <div class="tooltip-icon">
-                                    ❓
-                                    <div class="tooltip-box">
-                                        <strong>📌 Lần Nhắc Ăn</strong><br>
-                                        Số lần bạn phải nhắc trẻ ăn<br><br>
-                                        📝 Ví dụ:<br>
-                                        • "Ăn nhanh lên" = 1 lần<br>
-                                        • Nhắc lại = +1 lần
-                                    </div>
-                                </div>
-                            </div>
-                            <input type="number" id="eatingReminders" min="0" value="0">
-                        </div>
-                        <div class="form-group">
-                            <div class="form-group-header">
-                                <label>Lần khóc</label>
-                                <div class="tooltip-icon">
-                                    ❓
-                                    <div class="tooltip-box">
-                                        <strong>📌 Lần Khóc</strong><br>
-                                        Ghi số lần trẻ khóc trong bữa<br><br>
-                                        📝 Ví dụ:<br>
-                                        • Khóc 1 lần rồi dừng = 1<br>
-                                        • Khóc 2 lần rời ghế = 2<br>
-                                        • Khóc liên tục = 1
-                                    </div>
-                                </div>
-                            </div>
-                            <input type="number" id="cryingCount" min="0" value="0">
-                        </div>
-                        <div class="form-group">
-                            <div class="form-group-header">
-                                <label>Rời ghế</label>
-                                <div class="tooltip-icon">
-                                    ❓
-                                    <div class="tooltip-box">
-                                        <strong>📌 Rời Ghế</strong><br>
-                                        Số lần trẻ rời khỏi ghế/bàn ăn<br><br>
-                                        📝 Ví dụ:<br>
-                                        • Rời 1 lần = 1<br>
-                                        • Rời nhiều lần = ghi tổng
-                                    </div>
-                                </div>
-                            </div>
-                            <input type="number" id="leavingChairCount" min="0" value="0">
-                        </div>
-                        <div class="form-group">
-                            <div class="form-group-header">
-                                <label>Ngậm thức ăn</label>
-                                <div class="tooltip-icon">
-                                    ❓
-                                    <div class="tooltip-box">
-                                        <strong>📌 Ngậm Thức Ăn</strong><br>
-                                        Số lần trẻ ngậm/giữ thức ăn trong miệng<br><br>
-                                        📝 Ví dụ:<br>
-                                        • Ngậm rồi không nuốt = 1<br>
-                                        • Lặp lại nhiều = ghi tổng
-                                    </div>
-                                </div>
-                            </div>
-                            <input type="number" id="mouthHoldingCount" min="0" value="0">
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="form-group">
-                            <div class="form-group-header">
-                                <label>Cảm xúc trẻ</label>
-                                <div class="tooltip-icon">
-                                    ❓
-                                    <div class="tooltip-box">
-                                        <strong>📌 Cảm Xúc Trẻ</strong><br><br>
-                                        😊 Bình tĩnh: Không khóc, chủ động ăn<br>
-                                        😐 Hơi khó chịu: Hơi cau có, chậm ăn<br>
-                                        😢 Khóc: Khóc thường xuyên
-                                    </div>
-                                </div>
-                            </div>
-                            <select id="childEmotion">
-                                <option value="">Chọn</option>
-                                <option value="calm">😊 Bình tĩnh</option>
-                                <option value="uncomfortable">😐 Hơi khó chịu</option>
-                                <option value="crying">😢 Khóc</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <div class="form-group-header">
-                                <label>Căng thẳng người lớn</label>
-                                <div class="tooltip-icon">
-                                    ❓
-                                    <div class="tooltip-box">
-                                        <strong>📌 Căng Thẳng Người Lớn</strong><br><br>
-                                        😊 Bình tĩnh: Mình ổn, kiên nhẫn<br>
-                                        😠 Căng thẳng: Hơi bực, nhanh giận<br>
-                                        😡 Tức giận: Rất giận, nói to
-                                    </div>
-                                </div>
-                            </div>
-                            <select id="caregiverStress">
-                                <option value="">Chọn</option>
-                                <option value="calm">😊 Bình tĩnh</option>
-                                <option value="stressed">😠 Căng thẳng</option>
-                                <option value="angry">😡 Tức giận</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="form-group-header">
-                            <label>Ghi chú</label>
-                            <div class="tooltip-icon">
-                                ❓
-                                <div class="tooltip-box">
-                                    <strong>📌 Ghi Chú</strong><br>
-                                    Chi tiết khác về bữa ăn<br><br>
-                                    📝 Ví dụ:<br>
-                                    • Trẻ bị ho<br>
-                                    • Quá mệt<br>
-                                    • Ăn gì hôm nay
-                                </div>
-                            </div>
-                        </div>
-                        <textarea id="mealNotes" rows="3" placeholder="Ghi nhận chi tiết..."></textarea>
-                    </div>
-
-                    <div class="row">
-                        <button class="w-100" onclick="saveMealEntry()">💾 Lưu</button>
-                        <button class="w-100 secondary" onclick="clearMealForm()">🔄 Xóa</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- HISTORY TAB -->
-        <div class="tab-content" id="history">
-            <div class="card">
-                <div class="card-header">📋 Lịch Sử Bữa Ăn</div>
-                <div class="card-body">
-                    <div class="row">
-                        <input type="date" id="historyFilterDate">
-                        <select id="historyFilterMealType">
-                            <option value="">Tất cả bữa</option>
-                            <option value="breakfast">🌅 Sáng</option>
-                            <option value="snack1">☕ Bữa Phụ 1</option>
-                            <option value="lunch">🌞 Trưa</option>
-                            <option value="snack2">🍵 Bữa Phụ 2</option>
-                            <option value="dinner">🌙 Tối</option>
-                        </select>
-                        <button class="w-100" onclick="applyHistoryFilters()">🔍 Tìm Kiếm</button>
-                    </div>
-                    <div style="overflow-x: auto;">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Ngày</th>
-                                    <th>Bữa</th>
-                                    <th>Thời Gian</th>
-                                    <th>% Hoàn</th>
-                                    <th>Nhắc</th>
-                                    <th>Khóc</th>
-                                    <th>Thao Tác</th>
-                                </tr>
-                            </thead>
-                            <tbody id="historyTable">
-                                <tr>
-                                    <td colspan="7" style="text-align: center; color: #64748b;">Chưa có dữ liệu</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- GOAL TRACKING TAB -->
-        <div class="tab-content" id="goal">
-            <div class="card">
-                <div class="card-header">🎯 Goal Tracking (Alan Kazdin Method)</div>
-                <div class="card-body">
-                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem;">
-                        <p style="font-size: 0.9rem; color: #0c4a6e;">
-                            <strong>📌 Hướng dẫn:</strong> Thiết lập mục tiêu cải thiện hành vi ăn. Hệ thống sẽ tự động tracking hàng ngày.
-                        </p>
-                    </div>
-
-                    <div class="card" style="border-left: 4px solid #10b981;">
-                        <div class="card-header" style="background: #10b981;">➕ Tạo Goal Mới</div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="form-group">
-                                    <div class="form-group-header">
-                                        <label>Loại Goal</label>
-                                        <div class="tooltip-icon">
-                                            ❓
-                                            <div class="tooltip-box">
-                                                <strong>📌 Loại Goal</strong><br><br>
-                                                💯 Hoàn thành: Tăng % ăn<br>
-                                                ⬇️ Giảm hành vi: Giảm khóc, rời ghế<br>
-                                                ⬆️ Tăng hành vi: Tăng bình tĩnh
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <select id="goalTypeSelect" onchange="updateGoalForm()">
-                                        <option value="">Chọn loại</option>
-                                        <option value="completion">💯 Hoàn thành %</option>
-                                        <option value="reduce">⬇️ Giảm hành vi</option>
-                                        <option value="increase">⬆️ Tăng hành vi</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Completion Goal -->
-                            <div id="completionGoalForm" style="display: none;">
-                                <div class="row">
-                                    <div class="form-group">
-                                        <label>Target (%):</label>
-                                        <input type="number" id="completionTarget" min="25" max="100" step="5" value="80">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Reduce Behavior Goal -->
-                            <div id="reduceBehaviorForm" style="display: none;">
-                                <div class="row">
-                                    <div class="form-group">
-                                        <div class="form-group-header">
-                                            <label>Hành vi</label>
-                                            <div class="tooltip-icon">
-                                                ❓
-                                                <div class="tooltip-box">
-                                                    <strong>📌 Hành Vi Cần Giảm</strong><br><br>
-                                                    Khóc: Giảm số lần khóc<br>
-                                                    Rời Ghế: Giảm rời khỏi ghế<br>
-                                                    Ngậm: Giảm ngậm thức ăn
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <select id="reduceBehavior">
-                                            <option value="">Chọn</option>
-                                            <option value="crying">😢 Khóc</option>
-                                            <option value="leaving">👣 Rời Ghế</option>
-                                            <option value="holding">👄 Ngậm Thức Ăn</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Giảm xuống (lần/bữa):</label>
-                                        <input type="number" id="reduceTarget" min="0" max="10" value="1">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Increase Behavior Goal -->
-                            <div id="increaseBehaviorForm" style="display: none;">
-                                <div class="row">
-                                    <div class="form-group">
-                                        <div class="form-group-header">
-                                            <label>Hành vi</label>
-                                            <div class="tooltip-icon">
-                                                ❓
-                                                <div class="tooltip-box">
-                                                    <strong>📌 Hành Vi Cần Tăng</strong><br><br>
-                                                    Bình Tĩnh: Trẻ ăn yên tĩnh<br>
-                                                    Nhanh Ăn: Ăn nhanh hơn
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <select id="increaseBehavior">
-                                            <option value="">Chọn</option>
-                                            <option value="calm">😊 Bình Tĩnh</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Tăng lên (ngày/tuần):</label>
-                                        <input type="number" id="increaseTarget" min="1" max="7" value="5">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Common Fields -->
-                            <div class="row">
-                                <div class="form-group">
-                                    <div class="form-group-header">
-                                        <label>Thời hạn</label>
-                                        <div class="tooltip-icon">
-                                            ❓
-                                            <div class="tooltip-box">
-                                                <strong>📌 Thời Hạn</strong><br><br>
-                                                Chọn khoảng thời gian để tracking goal
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <select id="goalDuration">
-                                        <option value="7">1 tuần (7 ngày)</option>
-                                        <option value="14" selected>2 tuần (14 ngày)</option>
-                                        <option value="30">1 tháng (30 ngày)</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <div class="form-group-header">
-                                        <label>Ngày bắt đầu</label>
-                                        <div class="tooltip-icon">
-                                            ❓
-                                            <div class="tooltip-box">
-                                                <strong>📌 Ngày Bắt Đầu</strong><br><br>
-                                                Goal sẽ bắt đầu tính từ ngày này
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <input type="date" id="goalStartDate">
-                                </div>
-                            </div>
-
-                            <button class="w-100" onclick="createGoal()" style="background: #10b981;">💾 Tạo Goal</button>
-                        </div>
-                    </div>
-
-                    <!-- Goals List -->
-                    <h3 style="margin-top: 2rem; margin-bottom: 1rem;">📊 Goals Hiện Tại</h3>
-                    <div id="goalsList"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- DASHBOARD TAB -->
-        <div class="tab-content" id="dashboard">
-            <div class="card">
-                <div class="card-header">📊 Dashboard Thống Kê</div>
-                <div class="card-body">
-                    <div class="row">
-                        <button class="w-100 secondary" onclick="setDashboardRange(7)">7 Ngày</button>
-                        <button class="w-100 secondary" onclick="setDashboardRange(30)">30 Ngày</button>
-                        <button class="w-100 secondary" onclick="setDashboardRange(0)">Toàn Bộ</button>
-                    </div>
-                    <div id="dashboardStats"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SETTINGS TAB -->
-        <div class="tab-content" id="settings">
-            <div class="card">
-                <div class="card-header">⚙️ Cài Đặt & Dữ Liệu</div>
-                <div class="card-body">
-                    <h3 style="margin-bottom: 1rem;">📤 Backup & Khôi Phục</h3>
-                    <div class="row">
-                        <button class="w-100" onclick="exportJSON()">💾 Backup Dữ Liệu</button>
-                        <button class="w-100" onclick="importJSON()">🔄 Khôi Phục</button>
-                    </div>
-                    <h3 style="margin-bottom: 1rem; margin-top: 2rem;">📊 Xuất Báo Cáo</h3>
-                    <div class="row">
-                        <button class="w-100" onclick="exportCSV()">📥 Xuất CSV</button>
-                    </div>
-                    <h3 style="margin-bottom: 1rem; margin-top: 2rem;">💾 Dữ Liệu</h3>
-                    <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 1rem;">
-                        Dung lượng: <strong id="storageUsage">0</strong> KB
+                <div class="modal-body">
+                    <h6>Quản Lý Dữ Liệu</h6>
+                    <button class="btn btn-outline-primary w-100 mb-2" onclick="ImportExportManager.exportJSON()">
+                        <i class="bi bi-download"></i> Xuất JSON
+                    </button>
+                    <button class="btn btn-outline-primary w-100 mb-2" onclick="ImportExportManager.exportCSV()">
+                        <i class="bi bi-download"></i> Xuất CSV
+                    </button>
+                    <button class="btn btn-outline-warning w-100 mb-3" onclick="ImportExportManager.importJSON()">
+                        <i class="bi bi-upload"></i> Nhập JSON
+                    </button>
+                    <h6>Dữ Liệu</h6>
+                    <p class="small text-muted">
+                        <strong>Dung lượng:</strong> <span id="storageUsage">0</span> KB
                     </p>
-                    <button class="w-100" style="background: #ef4444;" onclick="clearAllData()">🗑️ Xóa Toàn Bộ Dữ Liệu</button>
+                    <button class="btn btn-outline-danger w-100" onclick="UIManager.confirmClearAllData()">
+                        <i class="bi bi-trash"></i> Xóa Toàn Bộ
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- HIDDEN FILE INPUT FOR IMPORT -->
-    <input type="file" id="importFileInput" style="display: none;" accept=".json" onchange="handleFileImport(event)">
+    <div class="modal fade" id="goalModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Mục Tiêu Mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="goalModalBody"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" onclick="GoalManager.saveGoal()">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!-- TOAST -->
     <div class="toast-container" id="toastContainer"></div>
+    <input type="file" id="fileInput" style="display: none;" accept=".json">
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // ==================== STORAGE ====================
-        const Storage = {
-            useMemory: false,
-            memoryStore: {},
+        // ================== DATA SCHEMA ==================
+        const DATA_VERSION = "1.0.0";
+        const DATA_SCHEMA = {
+            profile: { name: "", birthDate: "", height: 0, weight: 0 },
+            meals: [],
+            goals: [],
+            version: DATA_VERSION,
+            updatedAt: new Date().toISOString()
+        };
+
+        const MEAL_SCHEMA = {
+            id: "", date: "", mealType: "", startTime: "", endTime: "", totalTime: 0,
+            mealCompletion: 0, eatingReminders: 0, cryingCount: 0, leavingChairCount: 0,
+            mouthHoldingCount: 0, childEmotion: "", caregiverStress: "", notes: "",
+            createdAt: new Date().toISOString()
+        };
+
+        const GOAL_SCHEMA = {
+            id: "", name: "", description: "", targetValue: 0, progress: 0,
+            createdAt: new Date().toISOString()
+        };
+
+        // ================== APP STATE ==================
+        const AppState = {
+            data: JSON.parse(JSON.stringify(DATA_SCHEMA)),
+            charts: {},
 
             init() {
+                this.loadFromStorage();
+            },
+
+            loadFromStorage() {
                 try {
-                    localStorage.setItem('test', 'test');
-                    localStorage.removeItem('test');
+                    const stored = localStorage.getItem("behaviorTrackerData");
+                    if (stored) {
+                        this.data = JSON.parse(stored);
+                    }
                 } catch (e) {
-                    console.warn('localStorage blocked, using memory');
-                    this.useMemory = true;
+                    console.error("Load error:", e);
                 }
             },
 
-            set(key, value) {
+            saveToStorage() {
                 try {
-                    if (this.useMemory) {
-                        this.memoryStore[key] = value;
+                    this.data.updatedAt = new Date().toISOString();
+                    localStorage.setItem("behaviorTrackerData", JSON.stringify(this.data));
+                } catch (e) {
+                    console.error("Save error:", e);
+                }
+            }
+        };
+
+        // ================== MANAGERS ==================
+        const ProfileManager = {
+            getProfile() { return AppState.data.profile; },
+            setProfile(name, birthDate, height, weight) {
+                AppState.data.profile = { name, birthDate, height: parseFloat(height) || 0, weight: parseFloat(weight) || 0 };
+                AppState.saveToStorage();
+            },
+            getAge() {
+                if (!AppState.data.profile.birthDate) return 0;
+                const today = new Date();
+                const birth = new Date(AppState.data.profile.birthDate);
+                let age = today.getFullYear() - birth.getFullYear();
+                const m = today.getMonth() - birth.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+                return age;
+            }
+        };
+
+        const MealManager = {
+            addMeal(data) {
+                const id = Date.now().toString();
+                const meal = { ...MEAL_SCHEMA, id, ...data };
+                AppState.data.meals.push(meal);
+                AppState.saveToStorage();
+                return id;
+            },
+            updateMeal(id, data) {
+                const idx = AppState.data.meals.findIndex(m => m.id === id);
+                if (idx !== -1) {
+                    AppState.data.meals[idx] = { ...AppState.data.meals[idx], ...data };
+                    AppState.saveToStorage();
+                    return true;
+                }
+                return false;
+            },
+            deleteMeal(id) {
+                AppState.data.meals = AppState.data.meals.filter(m => m.id !== id);
+                AppState.saveToStorage();
+            },
+            getMeals() { return AppState.data.meals; },
+            getMealById(id) { return AppState.data.meals.find(m => m.id === id); },
+            getMealsByDateRange(days) {
+                if (days === 0) return AppState.data.meals;
+                const cutoff = new Date();
+                cutoff.setDate(cutoff.getDate() - days);
+                return AppState.data.meals.filter(m => new Date(m.date) >= cutoff);
+            }
+        };
+
+        const GoalManager = {
+            addGoal(data) {
+                const id = Date.now().toString();
+                const goal = { ...GOAL_SCHEMA, id, ...data };
+                AppState.data.goals.push(goal);
+                AppState.saveToStorage();
+            },
+            deleteGoal(id) {
+                AppState.data.goals = AppState.data.goals.filter(g => g.id !== id);
+                AppState.saveToStorage();
+            },
+            getGoals() { return AppState.data.goals; },
+            showCreateGoalModal() {
+                const modal = new bootstrap.Modal(document.getElementById("goalModal"));
+                document.getElementById("goalModalBody").innerHTML = `
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">Tên mục tiêu</label>
+                            <input type="text" class="form-control" id="goalName" placeholder="Ví dụ: Giảm khóc">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mô tả</label>
+                            <textarea class="form-control" id="goalDesc" rows="3"></textarea>
+                        </div>
+                    </form>
+                `;
+                document.querySelector("#goalModal .modal-footer").style.display = "flex";
+                modal.show();
+            },
+            saveGoal() {
+                const name = document.getElementById("goalName")?.value;
+                const desc = document.getElementById("goalDesc")?.value;
+                if (!name) {
+                    NotificationManager.show("Vui lòng nhập tên mục tiêu", "error");
+                    return;
+                }
+                this.addGoal({ name, description: desc });
+                bootstrap.Modal.getInstance(document.getElementById("goalModal")).hide();
+                UIManager.renderGoals();
+                NotificationManager.show("Mục tiêu đã tạo", "success");
+            },
+            renderGoalsUI() {
+                const goals = this.getGoals();
+                const container = document.getElementById("goalsContainer");
+                if (goals.length === 0) {
+                    container.innerHTML = '<div class="col-12"><div class="card"><div class="card-body text-center text-muted">Chưa có mục tiêu</div></div></div>';
+                    return;
+                }
+                container.innerHTML = goals.map(g => `
+                    <div class="col-lg-6 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <h6>${g.name}</h6>
+                                    <button class="btn btn-sm btn-danger" onclick="GoalManager.deleteGoal('${g.id}'); UIManager.renderGoals();">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                                <p class="small text-muted">${g.description}</p>
+                            </div>
+                        </div>
+                    </div>
+                `).join("");
+            }
+        };
+
+        const HistoryManager = {
+            currentPage: 1,
+            itemsPerPage: 10,
+            filteredData: [],
+            applyFilters() {
+                const dateFilter = document.getElementById("historyFilterDate").value;
+                const mealTypeFilter = document.getElementById("historyFilterMealType").value;
+                let meals = MealManager.getMeals();
+                if (dateFilter) meals = meals.filter(m => m.date === dateFilter);
+                if (mealTypeFilter) meals = meals.filter(m => m.mealType === mealTypeFilter);
+                this.filteredData = meals.reverse();
+                this.currentPage = 1;
+                this.renderTable();
+            },
+            renderTable() {
+                const tbody = document.getElementById("historyTableBody");
+                const start = (this.currentPage - 1) * this.itemsPerPage;
+                const end = start + this.itemsPerPage;
+                const pageData = this.filteredData.slice(start, end);
+                const mealTypeNames = { breakfast: "Sáng", lunch: "Trưa", dinner: "Tối" };
+                if (pageData.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Không tìm thấy</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = pageData.map(m => `
+                    <tr>
+                        <td>${m.date}</td>
+                        <td><span class="badge bg-primary">${mealTypeNames[m.mealType]}</span></td>
+                        <td>${m.totalTime} phút</td>
+                        <td>${m.mealCompletion}%</td>
+                        <td>${m.eatingReminders}</td>
+                        <td>${m.cryingCount}</td>
+                        <td>${m.leavingChairCount}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning action-btn" onclick="HistoryManager.editMeal('${m.id}')">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger action-btn" onclick="HistoryManager.deleteMeal('${m.id}')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join("");
+                this.renderPagination();
+            },
+            renderPagination() {
+                const totalPages = Math.ceil(this.filteredData.length / this.itemsPerPage);
+                const pagination = document.getElementById("historyPagination");
+                let html = "";
+                if (this.currentPage > 1) {
+                    html += `<li class="page-item"><button class="page-link" onclick="HistoryManager.goToPage(${this.currentPage - 1})">Trước</button></li>`;
+                }
+                for (let i = 1; i <= totalPages; i++) {
+                    if (i === this.currentPage) {
+                        html += `<li class="page-item active"><span class="page-link">${i}</span></li>`;
                     } else {
-                        localStorage.setItem(key, value);
+                        html += `<li class="page-item"><button class="page-link" onclick="HistoryManager.goToPage(${i})">${i}</button></li>`;
                     }
-                } catch (e) {
-                    this.memoryStore[key] = value;
                 }
-            },
-
-            get(key) {
-                try {
-                    if (this.useMemory) return this.memoryStore[key];
-                    return localStorage.getItem(key);
-                } catch (e) {
-                    return this.memoryStore[key];
+                if (this.currentPage < totalPages) {
+                    html += `<li class="page-item"><button class="page-link" onclick="HistoryManager.goToPage(${this.currentPage + 1})">Sau</button></li>`;
                 }
+                pagination.innerHTML = html;
             },
-
-            clear() {
-                this.memoryStore = {};
-                try { localStorage.clear(); } catch (e) {}
+            goToPage(page) {
+                this.currentPage = page;
+                this.renderTable();
+            },
+            editMeal(id) {
+                const meal = MealManager.getMealById(id);
+                if (!meal) return;
+                const [startH, startM] = meal.startTime.split(":");
+                const [endH, endM] = meal.endTime.split(":");
+                alert("Xin lỗi, tính năng chỉnh sửa sẽ được cập nhật sớm");
+            },
+            deleteMeal(id) {
+                if (confirm("Xóa bữa ăn này?")) {
+                    MealManager.deleteMeal(id);
+                    this.applyFilters();
+                    DashboardManager.renderCharts();
+                    NotificationManager.show("Đã xóa", "success");
+                }
             }
         };
 
-        Storage.init();
-
-        // ==================== DATA ====================
-        let app = {
-            profile: { name: '', birthDate: '', height: 0, weight: 0 },
-            meals: [],
-            goals: []
+        const DashboardManager = {
+            currentTimeRange: 30,
+            setTimeRange(days) {
+                this.currentTimeRange = days;
+                document.querySelectorAll("#dashboard .btn-group button").forEach(btn => btn.classList.remove("active"));
+                event.target.classList.add("active");
+                this.renderCharts();
+            },
+            getChartData(metric, days) {
+                const meals = MealManager.getMealsByDateRange(days);
+                const dates = {};
+                meals.forEach(meal => {
+                    if (!dates[meal.date]) dates[meal.date] = [];
+                    dates[meal.date].push(meal[metric] || 0);
+                });
+                const labels = Object.keys(dates).sort();
+                const data = labels.map(date => {
+                    const values = dates[date];
+                    return values.reduce((a, b) => a + b, 0) / values.length;
+                });
+                return { labels, data };
+            },
+            renderCharts() {
+                const charts = [
+                    { id: "mealTimeChart", metric: "totalTime", label: "Thời Gian Ăn", color: "rgb(75, 192, 192)" },
+                    { id: "mealCompletionChart", metric: "mealCompletion", label: "% Hoàn Thành", color: "rgb(54, 162, 235)" },
+                    { id: "cryingChart", metric: "cryingCount", label: "Số Lần Khóc", color: "rgb(255, 99, 132)" },
+                    { id: "remindersChart", metric: "eatingReminders", label: "Số Lần Nhắc", color: "rgb(255, 159, 64)" }
+                ];
+                charts.forEach(config => {
+                    const chartData = this.getChartData(config.metric, this.currentTimeRange);
+                    this.renderChart(config.id, config.label, chartData.labels, chartData.data, config.color);
+                });
+            },
+            renderChart(canvasId, label, labels, data, color) {
+                const ctx = document.getElementById(canvasId);
+                if (!ctx) return;
+                if (AppState.charts[canvasId]) AppState.charts[canvasId].destroy();
+                AppState.charts[canvasId] = new Chart(ctx, {
+                    type: "line",
+                    data: {
+                        labels,
+                        datasets: [{
+                            label,
+                            data,
+                            borderColor: color,
+                            backgroundColor: color + "20",
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 4
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                });
+            }
         };
 
-        function loadData() {
-            const data = Storage.get('app_data');
-            if (data) {
-                try {
-                    app = JSON.parse(data);
-                } catch (e) {
-                    console.error('Load error:', e);
+        const AnalyticsEngine = {
+            renderAnalytics() {
+                const meals = MealManager.getMeals();
+                const container = document.getElementById("analyticsContent");
+                if (meals.length === 0) {
+                    container.innerHTML = '<p class="text-muted">Chưa có đủ dữ liệu</p>';
+                    return;
                 }
-            }
-            loadProfileUI();
-        }
-
-        function saveData() {
-            Storage.set('app_data', JSON.stringify(app));
-        }
-
-        // ==================== PROFILE ====================
-        function loadProfileUI() {
-            document.getElementById('childName').value = app.profile.name;
-            document.getElementById('birthDate').value = app.profile.birthDate;
-            document.getElementById('childHeight').value = app.profile.height || 0;
-            document.getElementById('childWeight').value = app.profile.weight || 0;
-            updateAge();
-        }
-
-        function saveProfile() {
-            const name = document.getElementById('childName').value;
-            const birthDate = document.getElementById('birthDate').value;
-
-            if (!name || !birthDate) {
-                showToast('Vui lòng nhập đủ thông tin', 'error');
-                return;
-            }
-
-            app.profile = {
-                name,
-                birthDate,
-                height: parseFloat(document.getElementById('childHeight').value) || 0,
-                weight: parseFloat(document.getElementById('childWeight').value) || 0
-            };
-
-            saveData();
-            showToast('Hồ sơ đã lưu', 'success');
-        }
-
-        function updateAge() {
-            const birthDate = document.getElementById('birthDate').value;
-            if (!birthDate) {
-                document.getElementById('childAge').value = '';
-                return;
-            }
-            const today = new Date();
-            const birth = new Date(birthDate);
-            let age = today.getFullYear() - birth.getFullYear();
-            const m = today.getMonth() - birth.getMonth();
-            if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
-            document.getElementById('childAge').value = age + ' tuổi';
-        }
-
-        // ==================== MEAL ====================
-        function calculateMealTime() {
-            const st = document.getElementById('startTime').value;
-            const et = document.getElementById('endTime').value;
-            if (!st || !et) return;
-
-            const [sh, sm] = st.split(':').map(Number);
-            const [eh, em] = et.split(':').map(Number);
-            let time = (eh * 60 + em) - (sh * 60 + sm);
-            if (time < 0) time += 24 * 60;
-            document.getElementById('totalTime').value = time;
-        }
-
-        function saveMealEntry() {
-            const date = document.getElementById('mealDate').value;
-            const mealType = document.getElementById('mealType').value;
-            const st = document.getElementById('startTime').value;
-            const et = document.getElementById('endTime').value;
-
-            if (!date || !mealType || !st || !et) {
-                showToast('Vui lòng điền đủ thông tin', 'error');
-                return;
-            }
-
-            const meal = {
-                id: Date.now().toString(),
-                date,
-                mealType,
-                startTime: st,
-                endTime: et,
-                totalTime: parseInt(document.getElementById('totalTime').value) || 0,
-                mealCompletion: parseInt(document.getElementById('mealCompletion').value) || 0,
-                eatingReminders: parseInt(document.getElementById('eatingReminders').value) || 0,
-                cryingCount: parseInt(document.getElementById('cryingCount').value) || 0,
-                leavingChairCount: parseInt(document.getElementById('leavingChairCount').value) || 0,
-                mouthHoldingCount: parseInt(document.getElementById('mouthHoldingCount').value) || 0,
-                childEmotion: document.getElementById('childEmotion').value,
-                caregiverStress: document.getElementById('caregiverStress').value,
-                notes: document.getElementById('mealNotes').value
-            };
-
-            app.meals.push(meal);
-            saveData();
-            clearMealForm();
-            showToast('Bữa ăn đã lưu', 'success');
-            refreshHistory();
-            refreshDashboard();
-            updateGoalsTracking();
-        }
-
-        function clearMealForm() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('mealDate').value = today;
-            document.getElementById('mealType').value = '';
-            document.getElementById('startTime').value = '';
-            document.getElementById('endTime').value = '';
-            document.getElementById('totalTime').value = '';
-            document.getElementById('mealCompletion').value = '';
-            document.getElementById('eatingReminders').value = '0';
-            document.getElementById('cryingCount').value = '0';
-            document.getElementById('leavingChairCount').value = '0';
-            document.getElementById('mouthHoldingCount').value = '0';
-            document.getElementById('childEmotion').value = '';
-            document.getElementById('caregiverStress').value = '';
-            document.getElementById('mealNotes').value = '';
-        }
-
-        // ==================== HISTORY ====================
-        function refreshHistory() {
-            const meals = app.meals.slice().reverse();
-            const tbody = document.getElementById('historyTable');
-
-            if (meals.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #64748b;">Chưa có dữ liệu</td></tr>';
-                return;
-            }
-
-            const types = { 
-                breakfast: '🌅 Sáng', 
-                snack1: '☕ Bữa Phụ 1', 
-                lunch: '🌞 Trưa', 
-                snack2: '🍵 Bữa Phụ 2', 
-                dinner: '🌙 Tối' 
-            };
-            tbody.innerHTML = meals.map(m => `
-                <tr>
-                    <td>${m.date}</td>
-                    <td><span class="badge">${types[m.mealType] || m.mealType}</span></td>
-                    <td>${m.totalTime}m</td>
-                    <td>${m.mealCompletion}%</td>
-                    <td>${m.eatingReminders}</td>
-                    <td>${m.cryingCount}</td>
-                    <td><button style="background: #ef4444;" onclick="deleteMeal('${m.id}')">🗑️</button></td>
-                </tr>
-            `).join('');
-        }
-
-        function applyHistoryFilters() {
-            const date = document.getElementById('historyFilterDate').value;
-            const type = document.getElementById('historyFilterMealType').value;
-
-            let meals = app.meals;
-            if (date) meals = meals.filter(m => m.date === date);
-            if (type) meals = meals.filter(m => m.mealType === type);
-
-            meals = meals.slice().reverse();
-            const tbody = document.getElementById('historyTable');
-
-            if (meals.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Không tìm thấy</td></tr>';
-                return;
-            }
-
-            const types = { 
-                breakfast: '🌅 Sáng', 
-                snack1: '☕ Bữa Phụ 1', 
-                lunch: '🌞 Trưa', 
-                snack2: '🍵 Bữa Phụ 2', 
-                dinner: '🌙 Tối' 
-            };
-            tbody.innerHTML = meals.map(m => `
-                <tr>
-                    <td>${m.date}</td>
-                    <td><span class="badge">${types[m.mealType] || m.mealType}</span></td>
-                    <td>${m.totalTime}m</td>
-                    <td>${m.mealCompletion}%</td>
-                    <td>${m.eatingReminders}</td>
-                    <td>${m.cryingCount}</td>
-                    <td><button style="background: #ef4444;" onclick="deleteMeal('${m.id}')">🗑️</button></td>
-                </tr>
-            `).join('');
-        }
-
-        function deleteMeal(id) {
-            if (confirm('Xóa bữa ăn?')) {
-                app.meals = app.meals.filter(m => m.id !== id);
-                saveData();
-                refreshHistory();
-                refreshDashboard();
-                updateGoalsTracking();
-                showToast('Đã xóa', 'success');
-            }
-        }
-
-        // ==================== GOAL TRACKING ====================
-        function updateGoalForm() {
-            const goalType = document.getElementById('goalTypeSelect').value;
-            document.getElementById('completionGoalForm').style.display = goalType === 'completion' ? 'block' : 'none';
-            document.getElementById('reduceBehaviorForm').style.display = goalType === 'reduce' ? 'block' : 'none';
-            document.getElementById('increaseBehaviorForm').style.display = goalType === 'increase' ? 'block' : 'none';
-        }
-
-        function createGoal() {
-            const goalType = document.getElementById('goalTypeSelect').value;
-            const duration = parseInt(document.getElementById('goalDuration').value);
-            const startDate = document.getElementById('goalStartDate').value;
-
-            if (!goalType || !startDate) {
-                showToast('Vui lòng điền đủ thông tin', 'error');
-                return;
-            }
-
-            let goal = {
-                id: Date.now().toString(),
-                type: goalType,
-                startDate,
-                duration,
-                createdDate: new Date().toISOString(),
-                tracking: []
-            };
-
-            if (goalType === 'completion') {
-                goal.target = parseInt(document.getElementById('completionTarget').value);
-            } else if (goalType === 'reduce') {
-                goal.behavior = document.getElementById('reduceBehavior').value;
-                goal.target = parseInt(document.getElementById('reduceTarget').value);
-            } else if (goalType === 'increase') {
-                goal.behavior = document.getElementById('increaseBehavior').value;
-                goal.target = parseInt(document.getElementById('increaseTarget').value);
-            }
-
-            app.goals.push(goal);
-            saveData();
-            clearGoalForm();
-            refreshGoalsList();
-            updateGoalsTracking();
-            showToast('Goal đã tạo', 'success');
-        }
-
-        function clearGoalForm() {
-            document.getElementById('goalTypeSelect').value = '';
-            document.getElementById('completionTarget').value = '80';
-            document.getElementById('reduceBehavior').value = '';
-            document.getElementById('reduceTarget').value = '1';
-            document.getElementById('increaseBehavior').value = '';
-            document.getElementById('increaseTarget').value = '5';
-            document.getElementById('goalDuration').value = '14';
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('goalStartDate').value = today;
-            updateGoalForm();
-        }
-
-        function updateGoalsTracking() {
-            const today = new Date().toISOString().split('T')[0];
-            
-            app.goals.forEach(goal => {
-                if (goal.tracking.find(t => t.date === today)) return;
-
-                let dayMetrics = null;
-                
-                if (goal.type === 'completion') {
-                    const mealsToday = app.meals.filter(m => m.date === today);
-                    if (mealsToday.length > 0) {
-                        const avgCompletion = mealsToday.reduce((sum, m) => sum + m.mealCompletion, 0) / mealsToday.length;
-                        dayMetrics = { achieved: avgCompletion >= goal.target };
-                    }
-                } else if (goal.type === 'reduce') {
-                    const mealsToday = app.meals.filter(m => m.date === today);
-                    if (mealsToday.length > 0) {
-                        let total = 0;
-                        mealsToday.forEach(m => {
-                            if (goal.behavior === 'crying') total += m.cryingCount;
-                            else if (goal.behavior === 'leaving') total += m.leavingChairCount;
-                            else if (goal.behavior === 'holding') total += m.mouthHoldingCount;
-                        });
-                        const avg = total / mealsToday.length;
-                        dayMetrics = { achieved: avg <= goal.target };
-                    }
-                } else if (goal.type === 'increase') {
-                    const mealsToday = app.meals.filter(m => m.date === today);
-                    if (mealsToday.length > 0) {
-                        const calmMeals = mealsToday.filter(m => m.childEmotion === 'calm').length;
-                        dayMetrics = { achieved: calmMeals > 0 };
-                    }
-                }
-
-                if (dayMetrics) {
-                    goal.tracking.push({ date: today, ...dayMetrics });
-                }
-            });
-
-            saveData();
-            refreshGoalsList();
-        }
-
-        function getGoalProgress(goal) {
-            const endDate = new Date(goal.startDate);
-            endDate.setDate(endDate.getDate() + goal.duration);
-
-            const tracking = goal.tracking.filter(t => {
-                const trackDate = new Date(t.date);
-                return trackDate >= new Date(goal.startDate) && trackDate <= endDate;
-            });
-
-            const achieved = tracking.filter(t => t.achieved).length;
-            const total = Math.min(goal.duration, tracking.length);
-
-            return { achieved, total, progress: total > 0 ? Math.round((achieved / total) * 100) : 0 };
-        }
-
-        function getGoalBadge(progress) {
-            if (progress.achieved >= 3) {
-                return { icon: '🌟', label: 'Gold', type: 'gold', points: 10 * progress.achieved };
-            } else if (progress.achieved >= 2) {
-                return { icon: '🥈', label: 'Silver', type: 'silver', points: 10 * progress.achieved };
-            }
-            return { icon: '⭐', label: 'Pending', type: '', points: 10 * progress.achieved };
-        }
-
-        function refreshGoalsList() {
-            const goalsList = document.getElementById('goalsList');
-            if (app.goals.length === 0) {
-                goalsList.innerHTML = '<p style="color: #64748b; text-align: center;">Chưa có goal nào</p>';
-                return;
-            }
-
-            const goalTypeNames = {
-                completion: '💯 Hoàn thành %',
-                reduce: '⬇️ Giảm hành vi',
-                increase: '⬆️ Tăng hành vi'
-            };
-
-            goalsList.innerHTML = app.goals.map(goal => {
-                const progress = getGoalProgress(goal);
-                const badge = getGoalBadge(progress);
-                const endDate = new Date(goal.startDate);
-                endDate.setDate(endDate.getDate() + goal.duration);
-
-                let description = '';
-                if (goal.type === 'completion') {
-                    description = `Target: ${goal.target}%`;
-                } else if (goal.type === 'reduce') {
-                    const behaviors = { crying: 'Khóc', leaving: 'Rời Ghế', holding: 'Ngậm' };
-                    description = `Giảm ${behaviors[goal.behavior]} xuống ≤ ${goal.target} lần/bữa`;
-                } else if (goal.type === 'increase') {
-                    description = `Tăng ngày bình tĩnh ≥ ${goal.target} ngày/tuần`;
-                }
-
-                return `
-                    <div class="goal-item">
-                        <div class="goal-header">
-                            <span>${goalTypeNames[goal.type]}</span>
-                            <button style="background: #ef4444; padding: 0.5rem 1rem;" onclick="deleteGoal('${goal.id}')">🗑️ Xóa</button>
-                        </div>
-                        <div class="goal-info">
-                            ${description}<br>
-                            ⏱️ ${goal.startDate} → ${endDate.toISOString().split('T')[0]}
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${progress.progress}%;">
-                                ${progress.progress}%
-                            </div>
-                        </div>
-                        <div class="goal-stats">
-                            <div class="goal-stat">
-                                <div class="goal-stat-value">${progress.achieved}/${progress.total}</div>
-                                <div class="goal-stat-label">📅 Ngày Đạt</div>
-                            </div>
-                            <div class="goal-stat">
-                                <div class="goal-stat-value">${badge.icon}</div>
-                                <div class="goal-stat-label">${badge.label}</div>
-                            </div>
-                            <div class="goal-stat">
-                                <div class="goal-stat-value">${badge.points}</div>
-                                <div class="goal-stat-label">⭐ Points</div>
-                            </div>
-                        </div>
+                const avgTime = (meals.reduce((sum, m) => sum + m.totalTime, 0) / meals.length).toFixed(1);
+                const avgCompletion = (meals.reduce((sum, m) => sum + m.mealCompletion, 0) / meals.length).toFixed(0);
+                const avgReminders = (meals.reduce((sum, m) => sum + m.eatingReminders, 0) / meals.length).toFixed(1);
+                container.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-4"><div class="card"><div class="card-body text-center">
+                            <div class="stat-value">${avgTime}</div>
+                            <div class="stat-label">Phút/Bữa</div>
+                        </div></div></div>
+                        <div class="col-md-4"><div class="card"><div class="card-body text-center">
+                            <div class="stat-value">${avgCompletion}%</div>
+                            <div class="stat-label">Hoàn Thành</div>
+                        </div></div></div>
+                        <div class="col-md-4"><div class="card"><div class="card-body text-center">
+                            <div class="stat-value">${avgReminders}</div>
+                            <div class="stat-label">Nhắc/Bữa</div>
+                        </div></div></div>
                     </div>
                 `;
-            }).join('');
-        }
-
-        function deleteGoal(id) {
-            if (confirm('Xóa goal?')) {
-                app.goals = app.goals.filter(g => g.id !== id);
-                saveData();
-                refreshGoalsList();
-                showToast('Goal đã xóa', 'success');
             }
-        }
+        };
 
-        // ==================== DASHBOARD ====================
-        let dashRange = 30;
-
-        function setDashboardRange(days) {
-            dashRange = days;
-            refreshDashboard();
-        }
-
-        function refreshDashboard() {
-            let meals = app.meals;
-            if (dashRange > 0) {
-                const cutoff = new Date();
-                cutoff.setDate(cutoff.getDate() - dashRange);
-                meals = meals.filter(m => new Date(m.date) >= cutoff);
+        const ImportExportManager = {
+            exportJSON() {
+                const data = JSON.stringify(AppState.data, null, 2);
+                const blob = new Blob([data], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `behavior-tracker-${new Date().toISOString().split("T")[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                NotificationManager.show("Đã xuất JSON", "success");
+            },
+            exportCSV() {
+                const meals = MealManager.getMeals();
+                if (meals.length === 0) { NotificationManager.show("Không có dữ liệu", "error"); return; }
+                const headers = ["Ngày", "Bữa", "Giờ", "Thời Gian", "Hoàn Thành", "Nhắc", "Khóc", "Rời Ghế", "Cảm Xúc", "Ghi Chú"];
+                let csv = headers.join(",") + "\n";
+                meals.forEach(m => {
+                    const row = [m.date, m.mealType, m.startTime, m.totalTime, m.mealCompletion, m.eatingReminders, m.cryingCount, m.leavingChairCount, m.childEmotion, `"${m.notes}"`];
+                    csv += row.join(",") + "\n";
+                });
+                const blob = new Blob([csv], { type: "text/csv" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `behavior-tracker-${new Date().toISOString().split("T")[0]}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+                NotificationManager.show("Đã xuất CSV", "success");
+            },
+            importJSON() {
+                document.getElementById("fileInput").click();
+                document.getElementById("fileInput").onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try {
+                            const imported = JSON.parse(event.target.result);
+                            if (imported.profile && imported.meals) {
+                                AppState.data = imported;
+                                AppState.saveToStorage();
+                                NotificationManager.show("Đã nhập dữ liệu", "success");
+                                location.reload();
+                            }
+                        } catch (err) {
+                            NotificationManager.show("Lỗi định dạng", "error");
+                        }
+                    };
+                    reader.readAsText(file);
+                };
             }
+        };
 
-            if (meals.length === 0) {
-                document.getElementById('dashboardStats').innerHTML = '<p style="color: #64748b;">Chưa có dữ liệu</p>';
-                return;
+        const NotificationManager = {
+            show(message, type = "info") {
+                const container = document.getElementById("toastContainer");
+                const toast = document.createElement("div");
+                toast.className = `toast-custom ${type}`;
+                toast.innerHTML = message;
+                container.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.opacity = "0";
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
             }
+        };
 
-            const avg = (arr) => (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(1);
-            const avgTime = avg(meals.map(m => m.totalTime));
-            const avgComp = avg(meals.map(m => m.mealCompletion));
-            const avgCry = avg(meals.map(m => m.cryingCount));
-            const avgRemind = avg(meals.map(m => m.eatingReminders));
-
-            const html = `
-                <div class="row">
-                    <div class="card">
-                        <div class="card-body stat-box">
-                            <div class="stat-value">${avgTime}</div>
-                            <div class="stat-label">⏱️ Phút/Bữa</div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-body stat-box">
-                            <div class="stat-value">${avgComp}%</div>
-                            <div class="stat-label">🍽️ Hoàn Thành</div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-body stat-box">
-                            <div class="stat-value">${avgRemind}</div>
-                            <div class="stat-label">🔔 Nhắc/Bữa</div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-body stat-box">
-                            <div class="stat-value">${avgCry}</div>
-                            <div class="stat-label">😢 Khóc/Bữa</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-body">
-                        <h4 style="margin-bottom: 1rem;">📈 Xu Hướng Thời Gian Ăn</h4>
-                        <div>${meals.slice(-7).map(m => `
-                            <div style="margin-bottom: 1rem;">
-                                <div style="display: flex; gap: 1rem;">
-                                    <span style="width: 60px; font-size: 0.875rem;">${m.date}</span>
-                                    <div style="flex: 1; background: #e2e8f0; border-radius: 4px; height: 24px;">
-                                        <div style="width: ${(m.totalTime / 40 * 100)}%; background: #2563eb; height: 100%; border-radius: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 0.5rem; color: white; font-size: 0.75rem; font-weight: 600;">
-                                            ${m.totalTime}m
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `).join('')}</div>
-                    </div>
-                </div>
-            `;
-
-            document.getElementById('dashboardStats').innerHTML = html;
-        }
-
-        // ==================== EXPORT/IMPORT ====================
-        function exportJSON() {
-            const data = { profile: app.profile, meals: app.meals, goals: app.goals, exportDate: new Date().toISOString() };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `backup-${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            showToast('Backup thành công', 'success');
-        }
-
-        function importJSON() {
-            document.getElementById('importFileInput').click();
-        }
-
-        function handleFileImport(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if (data.profile && data.meals !== undefined) {
-                        app = data;
-                        saveData();
-                        loadProfileUI();
-                        refreshHistory();
-                        refreshGoalsList();
-                        refreshDashboard();
-                        showToast('Khôi phục thành công', 'success');
-                    } else {
-                        showToast('File không hợp lệ', 'error');
-                    }
-                } catch (err) {
-                    showToast('Lỗi khi đọc file', 'error');
+        const UIManager = {
+            init() {
+                this.loadProfile();
+                this.setupEventListeners();
+                this.updateStorageInfo();
+                DashboardManager.renderCharts();
+                const today = new Date().toISOString().split("T")[0];
+                document.getElementById("mealDate").value = today;
+            },
+            setupEventListeners() {
+                document.getElementById("birthDate").addEventListener("change", () => this.updateAge());
+                document.getElementById("startTime").addEventListener("change", () => this.calculateMealTime());
+                document.getElementById("endTime").addEventListener("change", () => this.calculateMealTime());
+                document.getElementById("mainTabs").addEventListener("shown.bs.tab", (e) => {
+                    const target = e.target.getAttribute("data-bs-target");
+                    if (target === "#history") HistoryManager.applyFilters();
+                    else if (target === "#dashboard") DashboardManager.renderCharts();
+                    else if (target === "#analytics") AnalyticsEngine.renderAnalytics();
+                    else if (target === "#goals") this.renderGoals();
+                });
+            },
+            loadProfile() {
+                const profile = ProfileManager.getProfile();
+                document.getElementById("childName").value = profile.name;
+                document.getElementById("birthDate").value = profile.birthDate;
+                document.getElementById("childHeight").value = profile.height;
+                document.getElementById("childWeight").value = profile.weight;
+                this.updateAge();
+            },
+            updateAge() {
+                document.getElementById("childAge").value = ProfileManager.getAge() + " tuổi";
+            },
+            calculateMealTime() {
+                const st = document.getElementById("startTime").value;
+                const et = document.getElementById("endTime").value;
+                if (!st || !et) return;
+                const [sh, sm] = st.split(":").map(Number);
+                const [eh, em] = et.split(":").map(Number);
+                let time = (eh * 60 + em) - (sh * 60 + sm);
+                if (time < 0) time += 24 * 60;
+                document.getElementById("totalTime").value = time;
+            },
+            saveProfile() {
+                const name = document.getElementById("childName").value;
+                const birthDate = document.getElementById("birthDate").value;
+                if (!name || !birthDate) {
+                    NotificationManager.show("Vui lòng nhập tên và ngày sinh", "error");
+                    return;
                 }
-            };
-            reader.readAsText(file);
-            event.target.value = '';
-        }
-
-        function exportCSV() {
-            if (app.meals.length === 0) {
-                showToast('Không có dữ liệu', 'error');
-                return;
+                ProfileManager.setProfile(name, birthDate, document.getElementById("childHeight").value, document.getElementById("childWeight").value);
+                NotificationManager.show("Hồ sơ đã lưu", "success");
+            },
+            saveMealEntry() {
+                const date = document.getElementById("mealDate").value;
+                const mealType = document.getElementById("mealType").value;
+                const st = document.getElementById("startTime").value;
+                const et = document.getElementById("endTime").value;
+                if (!date || !mealType || !st || !et) {
+                    NotificationManager.show("Vui lòng điền đủ thông tin", "error");
+                    return;
+                }
+                const mealData = {
+                    date, mealType, startTime: st, endTime: et,
+                    totalTime: parseInt(document.getElementById("totalTime").value) || 0,
+                    mealCompletion: parseInt(document.getElementById("mealCompletion").value) || 0,
+                    eatingReminders: parseInt(document.getElementById("eatingReminders").value) || 0,
+                    cryingCount: parseInt(document.getElementById("cryingCount").value) || 0,
+                    leavingChairCount: parseInt(document.getElementById("leavingChairCount").value) || 0,
+                    mouthHoldingCount: parseInt(document.getElementById("mouthHoldingCount").value) || 0,
+                    childEmotion: document.getElementById("childEmotion").value,
+                    caregiverStress: document.getElementById("caregiverStress").value,
+                    notes: document.getElementById("mealNotes").value
+                };
+                MealManager.addMeal(mealData);
+                this.clearMealForm();
+                NotificationManager.show("Bữa ăn đã lưu", "success");
+                DashboardManager.renderCharts();
+            },
+            clearMealForm() {
+                document.getElementById("mealForm").reset();
+                const today = new Date().toISOString().split("T")[0];
+                document.getElementById("mealDate").value = today;
+            },
+            renderGoals() {
+                GoalManager.renderGoalsUI();
+            },
+            updateStorageInfo() {
+                try {
+                    let total = 0;
+                    for (let key in localStorage) {
+                        if (localStorage.hasOwnProperty(key)) {
+                            total += localStorage[key].length + key.length;
+                        }
+                    }
+                    document.getElementById("storageUsage").textContent = (total / 1024).toFixed(2);
+                } catch (e) {}
+            },
+            confirmClearAllData() {
+                if (confirm("Xóa toàn bộ dữ liệu sẽ không thể khôi phục. Tiếp tục?")) {
+                    localStorage.clear();
+                    location.reload();
+                }
             }
+        };
 
-            let csv = 'Ngày,Bữa,Giờ Bắt Đầu,Thời Gian,Hoàn Thành,Nhắc,Khóc,Rời Ghế,Ghi Chú\n';
-            const types = { 
-                breakfast: 'Sáng', 
-                snack1: 'Bữa Phụ 1', 
-                lunch: 'Trưa', 
-                snack2: 'Bữa Phụ 2', 
-                dinner: 'Tối' 
-            };
-            app.meals.forEach(m => {
-                csv += `${m.date},${types[m.mealType] || m.mealType},${m.startTime},${m.totalTime},${m.mealCompletion},${m.eatingReminders},${m.cryingCount},${m.leavingChairCount},"${m.notes}"\n`;
-            });
-
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `report-${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            URL.revokeObjectURL(url);
-            showToast('Xuất CSV thành công', 'success');
-        }
-
-        // ==================== UI ====================
-        function switchTab(id) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-
-            document.getElementById(id).classList.add('active');
-            event.target.classList.add('active');
-
-            if (id === 'history') refreshHistory();
-            if (id === 'dashboard') refreshDashboard();
-            if (id === 'goal') refreshGoalsList();
-        }
-
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            Storage.set('darkMode', isDark ? 'yes' : 'no');
-        }
-
-        function showToast(msg, type = 'success') {
-            const toast = document.createElement('div');
-            toast.className = 'toast ' + (type === 'error' ? 'error' : '');
-            toast.textContent = msg;
-            document.getElementById('toastContainer').appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-
-        function clearAllData() {
-            if (confirm('Xóa tất cả dữ liệu?')) {
-                app = { profile: { name: '', birthDate: '', height: 0, weight: 0 }, meals: [], goals: [] };
-                Storage.clear();
-                location.reload();
-            }
-        }
-
-        // ==================== INIT ====================
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('App initialized');
-            loadData();
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('mealDate').value = today;
-            document.getElementById('goalStartDate').value = today;
-
-            document.getElementById('startTime').addEventListener('change', calculateMealTime);
-            document.getElementById('endTime').addEventListener('change', calculateMealTime);
-            document.getElementById('birthDate').addEventListener('change', updateAge);
-
-            const darkMode = Storage.get('darkMode') === 'yes';
-            if (darkMode) document.body.classList.add('dark-mode');
-
-            refreshHistory();
-            refreshDashboard();
-            refreshGoalsList();
-            updateGoalsTracking();
+        // ================== INITIALIZATION ==================
+        document.addEventListener("DOMContentLoaded", () => {
+            AppState.init();
+            UIManager.init();
+            HistoryManager.applyFilters();
         });
     </script>
 </body>
